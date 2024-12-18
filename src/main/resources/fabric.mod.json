@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "simpleskills",
+	"version": "${version}",
+	"name": "simpleskills",
+	"description": "Simply, skills.",
+	"authors": [
+		"Ob'yekt"
+	],
+	"contact": {
+		"homepage": "https://steamcommunity.com/id/obyekt/"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/simpleskills/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.github.ob_yekt.simpleskills.Simpleskills"
+		],
+		"client": [
+			"com.github.ob_yekt.simpleskills.SimpleskillsClient"
+		]
+	},
+	"mixins": [
+		"simpleskills.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

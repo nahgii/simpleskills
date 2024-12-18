@@ -1,0 +1,121 @@
+plugins {
+	id 'fabric-loom' version '1.9-SNAPSHOT'
+	id 'maven-publish'
+	id "com.gradleup.shadow" version "9.0.0-beta4" // For shading dependencies like SQLite
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	mavenCentral() // For org.xerial:sqlite-jdbc
+	maven { url 'https://maven.fabricmc.net/' } // Fabric's repository
+	maven { url 'https://libraries.minecraft.net/' } // Minecraft libraries
+}
+
+loom {
+	// Split source sets for main (shared) and client-only code
+	splitEnvironmentSourceSets()
+
+	mods {
+		"simpleskills" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java'] // Shared code (server and client)
+		}
+	}
+	client {
+		java {
+			srcDirs = ['src/client/java'] // Client-only source code
+		}
+	}
+}
+
+dependencies {
+	// Use versions defined in gradle.properties for other dependencies
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	implementation 'org.xerial:sqlite-jdbc:3.47.1.0' // SQLite dependency
+}
+
+shadowJar {
+	archiveClassifier.set("") // Set this as the default jar file
+
+	// Include compiled classes from main and client source sets
+	from(sourceSets.main.output)
+	from(sourceSets.client.output)
+
+	// Include SQLite dependency in the jar
+	dependencies {
+		include(dependency('org.xerial:sqlite-jdbc'))
+	}
+
+	// Exclude raw Java files from the jar
+	exclude '**/*.java'
+}
+
+remapJar {
+	dependsOn shadowJar // Shadow the jar first
+	inputFile.set(shadowJar.archiveFile) // Use shadow jar as input
+	archiveClassifier.set("") // Overwrite default jar with remapped jar
+}
+
+// Ensure the shaded jar is the main artifact
+artifacts {
+	archives shadowJar
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+// Ensure all Java compilation tasks use Java 21
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	// Loom will attach sourcesJar automatically
+	withSourcesJar()
+
+	// Specify Java 21 compatibility
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	// Add the LICENSE file to the final jar
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}" }
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+
+	repositories {
+		// Add repositories for publishing artifacts here
+	}
+}

@@ -1,0 +1,44 @@
+{
+  "minecraft:silk_touch": {
+    "level": 25
+  },
+  "minecraft:mending": {
+    "level": 40
+  },
+  "minecraft:efficiency": {
+    "level": {
+      "1": 10,
+      "2": 20,
+      "3": 30,
+      "4": 50,
+      "5": 60
+    }
+  },
+  "minecraft:sharpness": {
+    "level": {
+      "1": 10,
+      "2": 20,
+      "3": 30,
+      "4": 50,
+      "5": 60
+    }
+  },
+  "minecraft:power": {
+    "level": {
+      "1": 10,
+      "2": 20,
+      "3": 30,
+      "4": 50,
+      "5": 60
+    }
+  },
+  "minecraft:bane_of_arthropods": {
+    "level": {
+      "1": 10,
+      "2": 20,
+      "3": 30,
+      "4": 50,
+      "5": 60
+    }
+  }
+}

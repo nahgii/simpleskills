@@ -1,0 +1,18 @@
+{
+  "minecraft:wooden_axe": { "skill": "Slaying", "level": 0 },
+  "minecraft:stone_axe": { "skill": "Slaying", "level": 10 },
+  "minecraft:golden_axe": { "skill": "Slaying", "level": 12 },
+  "minecraft:iron_axe": { "skill": "Slaying", "level": 20 },
+  "minecraft:diamond_axe": { "skill": "Slaying", "level": 45 },
+  "minecraft:netherite_axe": { "skill": "Slaying", "level": 65 },
+
+  "minecraft:bow": { "skill": "Slaying", "level": 12 },
+  "minecraft:trident": { "skill": "Slaying", "level": 35 },
+
+  "minecraft:wooden_sword": { "skill": "Slaying", "level": 0 },
+  "minecraft:stone_sword": { "skill": "Slaying", "level": 10 },
+  "minecraft:golden_sword": { "skill": "Slaying", "level": 12 },
+  "minecraft:iron_sword": { "skill": "Slaying", "level": 20 },
+  "minecraft:diamond_sword": { "skill": "Slaying", "level": 45 },
+  "minecraft:netherite_sword": { "skill": "Slaying", "level": 65 }
+}

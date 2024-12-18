@@ -1,0 +1,33 @@
+{
+  "minecraft:leather_helmet": { "skill": "Defense", "level": 0 },
+  "minecraft:leather_chestplate": { "skill": "Defense", "level": 0 },
+  "minecraft:leather_leggings": { "skill": "Defense", "level": 0 },
+  "minecraft:leather_boots": { "skill": "Defense", "level": 0 },
+
+  "minecraft:golden_helmet": { "skill": "Defense", "level": 10 },
+  "minecraft:golden_chestplate": { "skill": "Defense", "level": 10 },
+  "minecraft:golden_leggings": { "skill": "Defense", "level": 10 },
+  "minecraft:golden_boots": { "skill": "Defense", "level": 10 },
+
+  "minecraft:chainmail_helmet": { "skill": "Defense", "level": 13 },
+  "minecraft:chainmail_chestplate": { "skill": "Defense", "level": 13 },
+  "minecraft:chainmail_leggings": { "skill": "Defense", "level": 13 },
+  "minecraft:chainmail_boots": { "skill": "Defense", "level": 13 },
+
+  "minecraft:turtle_helmet": { "skill": "Defense", "level": 15 },
+
+  "minecraft:iron_helmet": { "skill": "Defense", "level": 25 },
+  "minecraft:iron_chestplate": { "skill": "Defense", "level": 25 },
+  "minecraft:iron_leggings": { "skill": "Defense", "level": 25 },
+  "minecraft:iron_boots": { "skill": "Defense", "level": 25 },
+
+  "minecraft:diamond_helmet": { "skill": "Defense", "level": 45 },
+  "minecraft:diamond_chestplate": { "skill": "Defense", "level": 45 },
+  "minecraft:diamond_leggings": { "skill": "Defense", "level": 45 },
+  "minecraft:diamond_boots": { "skill": "Defense", "level": 45 },
+
+  "minecraft:netherite_helmet": { "skill": "Defense", "level": 65 },
+  "minecraft:netherite_chestplate": { "skill": "Defense", "level": 65 },
+  "minecraft:netherite_leggings": { "skill": "Defense", "level": 65 },
+  "minecraft:netherite_boots": { "skill": "Defense", "level": 65 }
+}
