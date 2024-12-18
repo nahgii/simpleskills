@@ -1,6 +1,7 @@
 # SimpleSkills Mod for Minecraft 1.21.4
 
 SimpleSkills is a **server-side Fabric mod** that transforms your Minecraft experience with a dynamic RPG-style skill system. Master skills like `Woodcutting`, `Mining`, or `Slaying` by leveling up through gameplay. Unlock tools, armor, and weapons as you progress, giving you a sense of achievement with every milestone.
+Simpleskills also works with a singleplayer session, but is not necessary to join a server running SimpleSkills.
 
 ---
 
@@ -11,7 +12,6 @@ SimpleSkills is a **server-side Fabric mod** that transforms your Minecraft expe
 - 🎯 **Customizable Configurations**: Define skill requirements and XP values in JSON files for full control over progression.
 - 🛠 **Dynamic Event Handling**: Hooks into player activities like mining, slaying mobs, and crafting.
 - 📈 **Runescape-like Leveling**: Experience a nostalgic leveling curve, with increasing XP requirements for higher levels (max level: 99).
-
 ---
 
 ## Current Skills
@@ -41,7 +41,7 @@ In SimpleSkills, players can only equip and use tools, weapons, and armor for wh
     - Follow the steps on the [official Fabric website]().
 
 3. **Add the Mod**:
-    - Place the `simpleskills` mod `.jar` file into your Minecraft Fabric server `mods` folder:
+    - Place the `simpleskills` mod `.jar` file into your Minecraft Fabric server or .minecraft `mods` folder:
 
 
 ---
