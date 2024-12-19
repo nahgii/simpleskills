@@ -27,13 +27,20 @@ public class XPManager {
     ///  XP LOGIC
 
     public static int getExperienceForLevel(int level) {
-        if (level == 0) return 0; // Level 0 always starts with 0 XP
+        if (level == 0) return 0;
+        double baseXp = 100; // Base XP
 
-        double baseXp = 100; // Base XP for level 1
-        double scalingFactor = 1.45; // Exponential growth factor
-
-        // Smooth progression formula
-        return (int) Math.floor(baseXp * Math.pow(level, scalingFactor));
+        if (level <= 65) {
+            // This should give around 115,000 XP at level 65
+            return (int) Math.floor(baseXp * Math.pow(level, 1.6));
+        } else {
+            // For levels beyond 65, adjust back to a balanced curve
+            int xpAt65 = (int) Math.floor(baseXp * Math.pow(65, 1.6));
+            double levelsAbove65 = level - 65;
+            // Adjusted for a moderate increase in XP requirement
+            double additionalXp = 2500 * Math.pow(levelsAbove65, 1.55) + 10000 * levelsAbove65;
+            return xpAt65 + (int) Math.floor(additionalXp);
+        }
     }
 
     // Inverse method to find the level for a given XP amount

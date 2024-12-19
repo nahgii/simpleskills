@@ -127,31 +127,31 @@ public class PlayerEventHandlers {
 
             // Check if the block is an ore and set rarity multipliers
             if (blockTranslationKey.contains("coal_ore")) {
-                xpMultiplier = 1.1;
+                xpMultiplier = 2.0;  // Common but not everywhere like stone, large veins
                 isOre = true;
             } else if (blockTranslationKey.contains("nether_quartz_ore")) {
-                xpMultiplier = 1.3;
+                xpMultiplier = 2.2;  // Common in nether, requires nether access
                 isOre = true;
             } else if (blockTranslationKey.contains("copper_ore")) {
-                xpMultiplier = 1.3;
+                xpMultiplier = 2.5;  // Large veins but less common than coal
                 isOre = true;
             } else if (blockTranslationKey.contains("iron_ore")) {
-                xpMultiplier = 1.6;
+                xpMultiplier = 3.0;  // Essential resource, moderately common
                 isOre = true;
             } else if (blockTranslationKey.contains("redstone_ore")) {
-                xpMultiplier = 2.1;
+                xpMultiplier = 4.0;  // Deep-level only, medium-sized veins
                 isOre = true;
             } else if (blockTranslationKey.contains("gold_ore")) {
-                xpMultiplier = 3.2;
+                xpMultiplier = 5.0;  // Deep-level, rarer than iron, smaller veins
                 isOre = true;
             } else if (blockTranslationKey.contains("lapis_ore")) {
-                xpMultiplier = 4.3;
+                xpMultiplier = 6.0;  // Concentrated at specific heights, important for enchanting
                 isOre = true;
             } else if (blockTranslationKey.contains("emerald_ore")) {
-                xpMultiplier = 5.3;
+                xpMultiplier = 8.0;  // Mountain-only, single blocks rather than veins
                 isOre = true;
             } else if (blockTranslationKey.contains("diamond_ore")) {
-                xpMultiplier = 6.3;
+                xpMultiplier = 10.0; // Deep-level only, smallest veins, most valuable
                 isOre = true;
             }
 
@@ -222,7 +222,7 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("crimson")
                     || blockTranslationKey.contains("warped"))
             {
-                XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, 10);
+                XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, 15);
 
             } else if (blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
                     || blockTranslationKey.contains("gravel")
@@ -234,14 +234,6 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("grass_block")
                     || blockTranslationKey.contains("soil")) {
                 XPManager.addXpWithNotification(serverPlayer, Skills.EXCAVATING, 10);
-
-            } else if (blockTranslationKey.contains("netherrack")) {
-                // Netherrack-specific XP logic
-                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, 0); // Reduced XP for Netherrack
-
-            } else if (blockTranslationKey.contains("snow_layer")) {
-                // Snow-specific XP logic
-                XPManager.addXpWithNotification(serverPlayer, Skills.EXCAVATING, 0); // No XP for Snow
             }
         });
     }
@@ -355,6 +347,7 @@ public class PlayerEventHandlers {
             return true; // Allow the damage to proceed
         });
     }
+
 
     /// Query the SQL database for a player's skill level
 

@@ -31,20 +31,16 @@ public class SkillTabMenu {
                     skillInfo.append("§8---------------------------------------\n");
                     skillInfo.append(formattedSkillInfo).append("\n");
                 } else {
-                    // Calculate progression
+                    // Calculate total XP requirement for next level
                     int xpForCurrentLevel = XPManager.getExperienceForLevel(currentLevel);
                     int xpToNextLevel = XPManager.getExperienceForLevel(currentLevel + 1) - xpForCurrentLevel;
                     int progressToNextLevel = currentXp - xpForCurrentLevel;
 
-                    // Fixed-length progress bar
-                    String progressBar = createProgressBar(progressToNextLevel, xpToNextLevel);
-
-                    // Standard skill row formatting with aligned XP columns
+                    // Standard skill row formatting without progress bar
                     String formattedSkillInfo = String.format(
-                            "§a%-15s §6Level %-7d §7[§6%-20s§7] §6XP: §e%7d §6/ §e%7d",
+                            "§a%-15s §6Level %-7d §6XP: §e%7d §6/ §e%7d",
                             skillName,                // Skill name, left-aligned to 15 characters
                             currentLevel,             // Level, left-aligned to 7 characters
-                            progressBar,              // Progress bar, 20 slots wide
                             progressToNextLevel,      // XP progress, right-aligned to 7 characters
                             xpToNextLevel             // XP to next level, right-aligned to 7 characters
                     );
@@ -65,21 +61,5 @@ public class SkillTabMenu {
                 Text.of(skillInfo.toString()), // Header
                 Text.of("") // No footer
         ));
-    }
-
-    /**
-     * Helper method to create a more thematic progress bar
-     *
-     * @param progress Current XP progress toward the next level
-     * @param total    Total XP needed for the next level
-     * @return A medieval-themed progress bar string
-     */
-    private static String createProgressBar(int progress, int total) {
-        int progressBarLength = 20; // Length of the progress bar
-        int filledBars = (int) ((double) progress / total * progressBarLength);
-        int emptyBars = progressBarLength - filledBars;
-
-        // Metallic-themed progress bar
-        return "§6" + "█".repeat(filledBars) + "§8" + "░".repeat(emptyBars); // Gold and dark gray
     }
 }

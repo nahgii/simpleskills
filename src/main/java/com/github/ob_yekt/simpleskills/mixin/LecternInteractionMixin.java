@@ -2,6 +2,7 @@ package com.github.ob_yekt.simpleskills.mixin;
 
 import com.github.ob_yekt.simpleskills.Skills;
 import com.github.ob_yekt.simpleskills.XPManager;
+
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
@@ -9,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -73,8 +73,8 @@ public class LecternInteractionMixin {
 
         // Check if the player has any XP at all
         if (totalXP > 0) {
-            // Conversion rate (e.g., 1 XP = 1 Magic XP, adjust if needed).
-            int conversionRate = 2;
+            // Conversion rate (e.g., 1 XP = 5 Magic XP, adjust if needed).
+            int conversionRate = 4;
             int convertedXP = totalXP * conversionRate;
 
             // Reset the player's vanilla XP (ensure proper XP removal).

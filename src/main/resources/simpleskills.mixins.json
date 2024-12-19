@@ -5,7 +5,11 @@
   "mixins": [
     "ArmorRestrictionMixin",
     "InventoryCheckMixin",
-    "LecternInteractionMixin"
+    "LecternInteractionMixin",
+    "AnvilInteractionMixin",
+    "BrewingStandInteractionMixin",
+    "EnchantingTableInteractionMixin",
+    "PotionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

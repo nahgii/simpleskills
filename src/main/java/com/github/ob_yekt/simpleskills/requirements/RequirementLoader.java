@@ -19,7 +19,8 @@ public class RequirementLoader {
     private static Map<String, SkillRequirement> toolRequirements = new ConcurrentHashMap<>();
     private static Map<String, SkillRequirement> armorRequirements = new ConcurrentHashMap<>();
     private static Map<String, SkillRequirement> weaponRequirements = new ConcurrentHashMap<>();
-
+    private static Map<String, SkillRequirement> magicRequirements = new ConcurrentHashMap<>();
+    private static Map<Integer, Integer> xpRequirements = new ConcurrentHashMap<>();
 
     // Load all JSON configuration files
     public static void loadRequirements() {
@@ -36,6 +37,7 @@ public class RequirementLoader {
         toolRequirements = loadOrGenerateDefaults("tool_requirements.json", getDefaultToolRequirements());
         armorRequirements = loadOrGenerateDefaults("armor_requirements.json", getDefaultArmorRequirements());
         weaponRequirements = loadOrGenerateDefaults("weapon_requirements.json", getDefaultWeaponRequirements());
+        magicRequirements = loadOrGenerateDefaults("magic_requirements.json", getDefaultMagicRequirements());
     }
 
     // Load a JSON file or create it with default values if missing
@@ -60,6 +62,29 @@ public class RequirementLoader {
             Simpleskills.LOGGER.error("[SimpleSkills] Error processing file '{}': {}", fileName, e.getMessage(), e);
         }
         return Collections.emptyMap(); // Return an empty map if an error occurs
+    }
+
+    // Load XP restrictions from magic_xp_restrictions.json
+    private static Map<Integer, Integer> loadOrGenerateXPRestrictions(String fileName, String defaultContent) {
+        try {
+            Path filePath = BASE_PATH.resolve(fileName);
+
+            // If the file doesn't exist, create it with default content
+            if (!Files.exists(filePath)) {
+                createDefaultFile(filePath, defaultContent);
+            }
+
+            // Read and parse the JSON file into a map
+            Gson gson = new Gson();
+            Type type = new TypeToken<Map<Integer, Integer>>() {}.getType();
+            try (Reader reader = new FileReader(filePath.toFile())) {
+                return gson.fromJson(reader, type);
+            }
+
+        } catch (Exception e) {
+            Simpleskills.LOGGER.error("[SimpleSkills] Error processing file '{}': {}", fileName, e.getMessage(), e);
+        }
+        return Collections.emptyMap(); // Use an empty map as fallback
     }
 
     // Create a JSON file with default content
@@ -146,8 +171,9 @@ public class RequirementLoader {
                 "minecraft:diamond_axe": { "skill": "Slaying", "level": 45 },
                 "minecraft:netherite_axe": { "skill": "Slaying", "level": 65 },
                 
+
                 "minecraft:bow": { "skill": "Slaying", "level": 12 },
-                "minecraft:trident": { "skill": "Slaying", "level": 35 },
+                "minecraft:mace": { "skill": "Slaying", "level": 35 },
                 
                 "minecraft:wooden_sword": { "skill": "Slaying", "level": 0 },
                 "minecraft:stone_sword": { "skill": "Slaying", "level": 10 },
@@ -155,6 +181,34 @@ public class RequirementLoader {
                 "minecraft:iron_sword": { "skill": "Slaying", "level": 20 },
                 "minecraft:diamond_sword": { "skill": "Slaying", "level": 45 },
                 "minecraft:netherite_sword": { "skill": "Slaying", "level": 65 }
+                }
+                """;
+    }
+
+    // Provide default JSON content for magic
+    private static String getDefaultMagicRequirements() {
+        return """
+                {
+                  "block.minecraft.brewing_stand": {
+                    "skill": "Magic",
+                    "level": 10
+                  },
+                  "block.minecraft.enchanting_table": {
+                    "skill": "Magic",
+                    "level": 35
+                  },
+                  "block.minecraft.anvil": {
+                    "skill": "Magic",
+                    "level": 65
+                  },
+                  "block.minecraft.chipped_anvil": {
+                    "skill": "Magic",
+                    "level": 65
+                  },
+                  "block.minecraft.damaged_anvil": {
+                    "skill": "Magic",
+                    "level": 65
+                  }
                 }
                 """;
     }
@@ -170,5 +224,9 @@ public class RequirementLoader {
 
     public static SkillRequirement getWeaponRequirement(String id) {
         return weaponRequirements.get(id);
+    }
+
+    public static SkillRequirement getMagicRequirement(String id) {
+        return magicRequirements.get(id);
     }
 }

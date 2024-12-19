@@ -25,8 +25,8 @@ public class SimpleskillsCommands {
                 CommandManager.literal("simpleskills")
                         .requires(source -> source.hasPermissionLevel(2))
 
-                        .then(CommandManager.literal("xp")
-                                .then(CommandManager.literal("add")
+                        .then(CommandManager.literal("add")
+                                .then(CommandManager.literal("xp")
                                         .then(CommandManager.argument("targets", StringArgumentType.string())
                                                 .suggests((context, builder) -> CommandSource.suggestMatching(getOnlinePlayerNames(context), builder))
                                                 .then(CommandManager.argument("skill", StringArgumentType.word())

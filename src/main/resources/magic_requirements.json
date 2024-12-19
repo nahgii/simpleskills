@@ -1,0 +1,22 @@
+{
+  "block.minecraft.brewing_stand": {
+    "skill": "Magic",
+    "level": 10
+  },
+  "block.minecraft.enchanting_table": {
+    "skill": "Magic",
+    "level": 35
+  },
+  "block.minecraft.anvil": {
+    "skill": "Magic",
+    "level": 65
+  },
+  "block.minecraft.chipped_anvil": {
+    "skill": "Magic",
+    "level": 65
+  },
+  "block.minecraft.damaged_anvil": {
+    "skill": "Magic",
+    "level": 65
+  }
+}

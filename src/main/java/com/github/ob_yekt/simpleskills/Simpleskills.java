@@ -22,12 +22,15 @@ public class Simpleskills implements ModInitializer {
 
 		// Register event handlers
 		PlayerEventHandlers.registerEvents();
-
 		LOGGER.info("Events registered!");
 
 		// Register commands
 		SimpleskillsCommands.registerCommands();
 		LOGGER.info("Commands registered!");
+
+		// Register trades
+		VillagerTrades.registerCustomTrades();
+		LOGGER.info("Trades registered!");
 
 		// Add shutdown hook
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
