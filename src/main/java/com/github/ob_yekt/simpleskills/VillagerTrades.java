@@ -10,7 +10,7 @@ import net.minecraft.village.VillagerProfession;
 public class VillagerTrades {
     public static void registerCustomTrades() {
 
-        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 1,
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 2,
                 factories -> factories.add((entity, random) ->
                         new TradeOffer(
                                 new TradedItem(Items.EMERALD, 3), // Cost: 3 emeralds
@@ -19,7 +19,7 @@ public class VillagerTrades {
                                 2, // Experience
                                 0.075F // Price Multiplier
                         )));
-        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 1,
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 2,
                 factories -> factories.add((entity, random) ->
                         new TradeOffer(
                                 new TradedItem(Items.EMERALD, 6), // Cost: 6 emeralds
@@ -31,7 +31,7 @@ public class VillagerTrades {
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 5,
                 factories -> factories.add((entity, random) ->
                         new TradeOffer(
-                                new TradedItem(Items.EMERALD, 4), // Cost: 3 emeralds
+                                new TradedItem(Items.EMERALD, 4), // Cost: 4 emeralds
                                 new ItemStack(Items.DRAGON_BREATH, 1), // Result: 1 dragon breath
                                 16, // Max Uses
                                 2, // Experience

@@ -46,11 +46,15 @@ public class HudRenderer {
         // Header bar
         skillInfo.append("§6⚔ Skills Overview ⚔\n");
 
+        int totalLevels = 0; // To store the sum of all skill levels
+
         try (var rs = db.getPlayerSkills(client.player.getUuidAsString())) {
             while (rs.next()) {
                 String skillName = rs.getString("skill");
                 int currentLevel = rs.getInt("level");
                 int currentXp = rs.getInt("xp");
+
+                totalLevels += currentLevel; // Add current level to total
 
                 if (currentLevel == XPManager.getMaxLevel()) {
                     // Add max-level skill
@@ -78,6 +82,10 @@ public class HudRenderer {
             System.out.println("[SimpleSkills] Failed to fetch skills for player");
             return "Error fetching skills.";
         }
+
+        // Add the "Total Levels" section
+        skillInfo.append("---------------------------------------\n");
+        skillInfo.append(String.format("§b§lTotal Levels: §a%d\n", totalLevels)); // Bold + blue text for total levels
 
         // Normalize line endings to just '\n' to avoid stray 'CR' symbols
         return skillInfo.toString().replace("\r", "");

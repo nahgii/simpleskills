@@ -313,8 +313,6 @@ public class PlayerEventHandlers {
 
     private static void registerSlayingEvents() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((target, damageSource, damageAmount) -> {
-            if (damageAmount < MIN_DAMAGE_THRESHOLD) return true; // Ignore damage below threshold
-
             if (damageSource.getAttacker() instanceof net.minecraft.server.network.ServerPlayerEntity attacker) {
                 ItemStack weapon = attacker.getMainHandStack();
 
@@ -324,6 +322,7 @@ public class PlayerEventHandlers {
                 String weaponName = Registries.ITEM.getId(weapon.getItem()).toString();
                 SkillRequirement requirement = RequirementLoader.getWeaponRequirement(weaponName);
 
+                // Check if the player meets the required level for the weapon
                 if (requirement != null && "Slaying".equalsIgnoreCase(requirement.getSkill())) {
                     int requiredLevel = requirement.getLevel();
                     int playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.SLAYING);
@@ -333,11 +332,14 @@ public class PlayerEventHandlers {
                                 Text.of("[SimpleSkills] You need Slaying level " + requiredLevel + " to use this weapon!"),
                                 true
                         );
-                        return false; // Block the attack
+                        return false; // Block the attack due to unmet level requirements
                     }
                 }
 
-                // Grant Slaying XP if the target is NOT an Armor Stand and if damage meets the threshold
+                // Now check if the damage is above the threshold (AFTER the weapon requirement is verified)
+                if (damageAmount < MIN_DAMAGE_THRESHOLD) return true;
+
+                // Grant Slaying XP if the target is NOT an Armor Stand
                 if (!(target instanceof net.minecraft.entity.decoration.ArmorStandEntity)) {
                     int xpGained = Math.round(damageAmount); // 1 XP per damage point
                     XPManager.addXpWithNotification(attacker, Skills.SLAYING, xpGained); // Grant Slaying XP

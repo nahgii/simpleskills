@@ -10,11 +10,9 @@ This mod is performance-friendly, **does not utilize server ticks or client tick
 
 - 📜 **Skill Progression**: Earn XP in skills including `Defense`, `Woodcutting`, `Mining`, `Excavating`, `Slaying`, and `Magic`.
 - ⚔ **Tool, Weapon, and Armor Requirements**: Tiered system based on skill levels to equip items and blocks.
-- 🔮 **Magic Skill**: Learn brewing, enchanting, and enhance potion durations as you increase your Magic level!
+- 🔮 **Magic Skill**: Enhance potion effects and unlock utility blocks like the Anvil, Brewing Stand, and Enchanting Table at specific Magic levels.
 - 🎮 **Customizable Requirements**: Edit JSON files to easily tweak skill requirements or progression for your server.
-- 🧪 **Magic System**: Enhance potion effects and unlock utility blocks like the Anvil, Brewing Stand, and Enchanting Table at specific Magic levels.
 - 🔋 **Performance Optimization**: Doesn't use server or client ticks, ensuring minimal overhead.
-
 ---
 
 ## Skill Requirements
@@ -81,8 +79,9 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 ### Magic Skill: Potion Durations and Unlocks
 
 The **Magic skill** allows players to enhance their gameplay through positive potion effects and unlock useful blocks.
-
+To increase **Magic skill** players must convert their Vanilla XP by right-clicking on an empty lectern with an empty hand. Players can also gain **Magic skill** XP through potions effect application.
 - **Duration Increase**: The maximum duration of positive potion effects applied to the player is increased based on their Magic level. Players can drink multiple level I potions to extend durations in minutes equal to their Magic level.
+- **Adjusted Trades**: Novice clerics can now offer Nether Wart and Blaze powder, and Master clerics can offer Dragon's Breath.
 - **Affected Potions (Level I Only)**:
    - Potion of Fire Resistance
    - Potion of Strength

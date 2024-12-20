@@ -15,12 +15,16 @@ public class SkillTabMenu {
         skillInfo.append("§c§l⚔ Skills Overview ⚔§r\n"); // Red + bold with special symbols
         skillInfo.append("§6§m=======================================\n");
 
+        int totalLevels = 0; // To store the sum of all skill levels
+
         try (var rs = db.getPlayerSkills(player.getUuidAsString())) {
             while (rs.next()) {
                 // Retrieve skill information
                 String skillName = rs.getString("skill");
                 int currentLevel = rs.getInt("level");
                 int currentXp = rs.getInt("xp");
+
+                totalLevels += currentLevel; // Add current level to total
 
                 if (currentLevel == XPManager.getMaxLevel()) {
                     // Special formatting for max-level skills
@@ -52,6 +56,10 @@ public class SkillTabMenu {
             Simpleskills.LOGGER.error("Failed to fetch skill data for player {}", player.getUuidAsString(), e);
             skillInfo.append("§4§lError: §cUnable to load skill data.\n"); // Error message formatting
         }
+
+        // Add the Total Levels section after listing individual skills
+        skillInfo.append("§8---------------------------------------\n");
+        skillInfo.append(String.format("§b§lTotal Levels: §a%d\n", totalLevels)); // Bold + blue styling for "Total Levels"
 
         // Footer styling
         skillInfo.append("§6§m=======================================\n");
