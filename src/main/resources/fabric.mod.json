@@ -3,7 +3,7 @@
 	"id": "simpleskills",
 	"version": "${version}",
 	"name": "simpleskills",
-	"description": "Simply, skills.",
+	"description": "Adds Runescape-esque skills to Minecraft",
 	"authors": [
 		"Ob'yekt"
 	],
