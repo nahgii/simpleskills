@@ -195,14 +195,16 @@ public class PlayerEventHandlers {
             {
                 XPManager.addXpWithNotification(serverPlayer, Skills.MINING, 10);
 
-            } else if (blockTranslationKey.contains("log")
+            } else if (!blockTranslationKey.contains("leaves")
+                    && !blockTranslationKey.equals("block.minecraft.bamboo")
+                    && !blockTranslationKey.contains("block.minecraft.sapling")
+                    && (blockTranslationKey.contains("log")
                     || blockTranslationKey.contains("planks")
                     || blockTranslationKey.contains("bookshelf")
                     || blockTranslationKey.contains("sign")
                     || blockTranslationKey.contains("root")
                     || blockTranslationKey.contains("door")
                     || blockTranslationKey.contains("barrel")
-                    || blockTranslationKey.contains("table")
                     || blockTranslationKey.contains("chest")
                     || blockTranslationKey.contains("lectern")
                     || blockTranslationKey.contains("loom")
@@ -220,7 +222,7 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("cherry")
                     || blockTranslationKey.contains("bamboo")
                     || blockTranslationKey.contains("crimson")
-                    || blockTranslationKey.contains("warped"))
+                    || blockTranslationKey.contains("warped")))
             {
                 XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, 15);
 
