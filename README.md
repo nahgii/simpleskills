@@ -122,7 +122,6 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 * Excavating: +1% movement speed per level (+33% at level 99).
 * Magic: Gain fall damage reduction based on level: lvl 66-75: 25%, lvl 76-85: 50%, lvl 86-98: 75%, lvl 99: 100%.
 
-git commit -m "Added attributes (passive perks) to all skills."
 ## Installation
 
 1. **Download the Mod**
