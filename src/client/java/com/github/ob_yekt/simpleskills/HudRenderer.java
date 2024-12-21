@@ -85,7 +85,7 @@ public class HudRenderer {
 
         // Add the "Total Levels" section
         skillInfo.append("---------------------------------------\n");
-        skillInfo.append(String.format("§b§lTotal Levels: §a%d\n", totalLevels)); // Bold + blue text for total levels
+        skillInfo.append(String.format("§b§lTotal Level: §a%d\n", totalLevels)); // Bold + blue text for total levels
 
         // Normalize line endings to just '\n' to avoid stray 'CR' symbols
         return skillInfo.toString().replace("\r", "");

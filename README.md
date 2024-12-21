@@ -13,6 +13,7 @@ This mod is performance-friendly, **does not utilize server ticks or client tick
 - 🔮 **Magic Skill**: Enhance potion effects and unlock utility blocks like the Anvil, Brewing Stand, and Enchanting Table at specific Magic levels.
 - 🎮 **Customizable Requirements**: Edit JSON files to easily tweak skill requirements or progression for your server.
 - 🔋 **Performance Optimization**: Doesn't use server or client ticks, ensuring minimal overhead.
+- Passive Abilities: after unlocking everything at level 65, players gain bonuses until the maximum level of 99 per skill.
 ---
 
 ## Skill Requirements
@@ -104,6 +105,24 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 
 ---
 
+### **Passive Abilities**
+| Attribute bonus | Skill       | MAX   |
+|-----------------|-------------|-------|
+| Attack Damage   | Slaying     | +33%  |
+| Block Range     | Woodcutting | 7.0   |
+| Max Health      | Defense     | 8 HP  |
+| Breaking Speed  | Mining      | +28%  |
+| Movement Speed  | Excavating  | +33%  |
+| Fall Reduction  | Magic       | +100% |
+**Details**
+* Slaying: 33% more damage at level 99 (1% per level)
+* Woodcutting: Increases block interaction range per level. Base level is 4.5.
+* Defense: Gain 2 health (1 heart) every 10 levels starting from 66 to a total of 8 health (4 hearts) at level 99.
+* Mining: Gain faster block breaking speed per level. At level 99 you can instantly mine stone with a Netherite Pickaxe with Efficiency V (similar to Haste II).
+* Excavating: +1% movement speed per level (+33% at level 99).
+* Magic: Gain fall damage reduction based on level: lvl 66-75: 25%, lvl 76-85: 50%, lvl 86-98: 75%, lvl 99: 100%.
+
+git commit -m "Added attributes (passive perks) to all skills."
 ## Installation
 
 1. **Download the Mod**

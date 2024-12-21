@@ -42,12 +42,13 @@ public class SimpleskillsCommands {
                                                 .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
                                                         .executes(SimpleskillsCommands::setLevel)))))
 
+                        // Add sub-command for querying total level
                         .then(CommandManager.literal("query")
                                 .then(CommandManager.argument("targets", StringArgumentType.string())
                                         .suggests((context, builder) -> CommandSource.suggestMatching(getOnlinePlayerNames(context), builder))
-                                        .then(CommandManager.argument("skill", StringArgumentType.word())
-                                                .suggests((context, builder) -> CommandSource.suggestMatching(getValidSkills(), builder))
-                                                .executes(SimpleskillsCommands::querySkill))))));
+
+                                        .then(CommandManager.literal("total")
+                                                .executes(SimpleskillsCommands::queryTotalLevel))))));
     }
 
     private static int addXp(CommandContext<ServerCommandSource> context) {
@@ -89,6 +90,9 @@ public class SimpleskillsCommands {
         targetPlayer.sendMessage(Text.of("[SimpleSkills] Your skill '" + skill.getDisplayName() + "' was set to level " + newLevel + "!"), false);
         context.getSource().sendFeedback(() -> Text.of("[SimpleSkills] Set " + skill.getDisplayName() + " to level " + newLevel + " for player " + playerName + "."), true);
 
+        // Update the player's attributes for the modified skill
+        AttributeUpdater.updatePlayerAttributes(targetPlayer, skill);
+
         // Update the player's tab menu to reflect the change
         SkillTabMenu.updateTabMenu(targetPlayer);
 
@@ -117,7 +121,7 @@ public class SimpleskillsCommands {
 
         int level = XPManager.getSkillLevel(targetPlayer.getUuidAsString(), skill);
 
-        source.sendFeedback(() -> Text.of("[SimpleSkills] " + playerName + "'s '" + skill.getDisplayName() + "' level: " + level), true);
+        source.sendFeedback(() -> Text.of("[SimpleSkills] " + playerName + "'s '" + skill.getDisplayName() + "' level: " + level), false);
         return 1;
     }
 
@@ -144,6 +148,34 @@ public class SimpleskillsCommands {
         source.sendFeedback(() -> Text.of("[SimpleSkills] Added " + amount + " XP to " + playerName + "'s skill '" + skill.getDisplayName() + "'."), true);
 
         targetPlayer.sendMessage(Text.of("[SimpleSkills] Your skill '" + skill.getDisplayName() + "' was updated!"), false);
+        return 1;
+    }
+
+    private static int queryTotalLevel(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        String playerName = StringArgumentType.getString(context, "targets");
+
+        // Find the specified player
+        ServerPlayerEntity targetPlayer = source.getServer().getPlayerManager().getPlayer(playerName);
+
+        if (targetPlayer == null) {
+            source.sendError(Text.of("[SimpleSkills] Player '" + playerName + "' not found."));
+            return 0;
+        }
+
+        String playerUuid = targetPlayer.getUuidAsString();
+
+        // Loop through all skills and calculate total level
+        int totalLevel = Stream.of(Skills.values())
+                .mapToInt(skill -> XPManager.getSkillLevel(playerUuid, skill))
+                .sum();
+
+        // Send feedback to the command source
+        source.sendFeedback(
+                () -> Text.of("[SimpleSkills] " + playerName + "'s total skill level: " + totalLevel),
+                false
+        );
+
         return 1;
     }
 

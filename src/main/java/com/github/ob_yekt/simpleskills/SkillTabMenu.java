@@ -59,7 +59,7 @@ public class SkillTabMenu {
 
         // Add the Total Levels section after listing individual skills
         skillInfo.append("§8---------------------------------------\n");
-        skillInfo.append(String.format("§b§lTotal Levels: §a%d\n", totalLevels)); // Bold + blue styling for "Total Levels"
+        skillInfo.append(String.format("§b§lTotal Level: §a%d\n", totalLevels)); // Bold + blue styling for "Total Levels"
 
         // Footer styling
         skillInfo.append("§6§m=======================================\n");

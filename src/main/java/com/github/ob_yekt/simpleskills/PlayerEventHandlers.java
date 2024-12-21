@@ -35,6 +35,9 @@ public class PlayerEventHandlers {
 
         // Register slaying-related events
         registerSlayingEvents();
+
+        // Register skill attribute update event
+        registerAttributeUpdateEvent();
     }
 
     private static void registerPlayerJoinEvent() {
@@ -71,10 +74,19 @@ public class PlayerEventHandlers {
         });
     }
 
+    private static void registerAttributeUpdateEvent() {
+        XPManager.setOnXpChangeListener((player, skill) -> {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                AttributeUpdater.updatePlayerAttributes(serverPlayer, skill);
+            }
+        });
+    }
+
     private static void registerXpGainEvent() {
         // Whenever XP is added, refresh the player's tab menu
         XPManager.setOnXpChangeListener((player, skill) -> {
             SkillTabMenu.updateTabMenu(player); // Update the tab menu after XP gain
+
         });
     }
 
@@ -175,7 +187,8 @@ public class PlayerEventHandlers {
             // Grant XP for ores or other blocks
             if (isOre) {
                 XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (int) (10 * xpMultiplier));
-            } else if (blockTranslationKey.contains("stone")
+            } else if (!blockTranslationKey.contains("button")
+                    && (blockTranslationKey.contains("stone")
                     || blockTranslationKey.contains("obsidian")
                     || blockTranslationKey.contains("Netherite")
                     || blockTranslationKey.contains("Debris")
@@ -191,17 +204,25 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("brick")
                     || blockTranslationKey.contains("sandstone")
                     || blockTranslationKey.contains("blackstone")
-                    || blockTranslationKey.contains("copper"))
+                    || blockTranslationKey.contains("copper")))
             {
                 XPManager.addXpWithNotification(serverPlayer, Skills.MINING, 10);
 
             } else if (!blockTranslationKey.contains("leaves")
+                    && !blockTranslationKey.contains("enchanting")
+                    && !blockTranslationKey.contains("sign")
+                    && !blockTranslationKey.contains("sapling")
+                    && !blockTranslationKey.contains("fungus")
+                    && !blockTranslationKey.contains("mangrove_roots")
+                    && !blockTranslationKey.contains("propagule")
+                    && !blockTranslationKey.contains("button")
                     && !blockTranslationKey.equals("block.minecraft.bamboo")
-                    && !blockTranslationKey.contains("block.minecraft.sapling")
+                    && !blockTranslationKey.equals("block.minecraft.hanging_roots")
+                    && !blockTranslationKey.equals("block.minecraft.crimson_roots")
+                    && !blockTranslationKey.equals("block.minecraft.warped_roots")
                     && (blockTranslationKey.contains("log")
                     || blockTranslationKey.contains("planks")
                     || blockTranslationKey.contains("bookshelf")
-                    || blockTranslationKey.contains("sign")
                     || blockTranslationKey.contains("root")
                     || blockTranslationKey.contains("door")
                     || blockTranslationKey.contains("barrel")
@@ -218,6 +239,7 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("jungle")
                     || blockTranslationKey.contains("acacia")
                     || blockTranslationKey.contains("dark_oak")
+                    || blockTranslationKey.contains("pale_oak")
                     || blockTranslationKey.contains("mangrove")
                     || blockTranslationKey.contains("cherry")
                     || blockTranslationKey.contains("bamboo")
@@ -228,6 +250,7 @@ public class PlayerEventHandlers {
 
             } else if (blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
                     || blockTranslationKey.contains("gravel")
+                    || blockTranslationKey.contains("clay")
                     || blockTranslationKey.contains("podzol")
                     || blockTranslationKey.contains("mycelium")
                     || blockTranslationKey.contains("farmland")
@@ -282,7 +305,7 @@ public class PlayerEventHandlers {
         // Grant Defense XP if the player has any armor equipped
         if (armorCount > 0) {
             float armorMultiplier = 1.0f + (0.25f * armorCount); // Bonus scaling for more armor
-            float xpMultiplier = 1.75f; // Base multiplier for defense XP
+            float xpMultiplier = 2f; // Base multiplier for defense XP
             int xpGained = Math.round(damageAmount * xpMultiplier * armorMultiplier);
 
             // Add Defense XP using the centralized method

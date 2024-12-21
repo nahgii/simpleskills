@@ -9,14 +9,14 @@
   },
   "block.minecraft.anvil": {
     "skill": "Magic",
-    "level": 65
+    "level": 55
   },
   "block.minecraft.chipped_anvil": {
     "skill": "Magic",
-    "level": 65
+    "level": 55
   },
   "block.minecraft.damaged_anvil": {
     "skill": "Magic",
-    "level": 65
+    "level": 55
   }
 }

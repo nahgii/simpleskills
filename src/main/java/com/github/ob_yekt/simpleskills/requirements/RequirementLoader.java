@@ -124,7 +124,7 @@ public class RequirementLoader {
     // Provide default JSON content for armor
     private static String getDefaultArmorRequirements() {
         return """
-                {
+                              {
                 "minecraft:leather_helmet": { "skill": "Defense", "level": 0 },
                 "minecraft:leather_chestplate": { "skill": "Defense", "level": 0 },
                 "minecraft:leather_leggings": { "skill": "Defense", "level": 0 },
@@ -141,6 +141,7 @@ public class RequirementLoader {
                 "minecraft:chainmail_boots": { "skill": "Defense", "level": 13 },
                 
                 "minecraft:turtle_helmet": { "skill": "Defense", "level": 15 },
+                "minecraft:elytra": { "skill": "Magic", "level": 65 },
                 
                 "minecraft:iron_helmet": { "skill": "Defense", "level": 25 },
                 "minecraft:iron_chestplate": { "skill": "Defense", "level": 25 },
@@ -156,7 +157,7 @@ public class RequirementLoader {
                 "minecraft:netherite_chestplate": { "skill": "Defense", "level": 65 },
                 "minecraft:netherite_leggings": { "skill": "Defense", "level": 65 },
                 "minecraft:netherite_boots": { "skill": "Defense", "level": 65 }
-                }
+                              }
                 """;
     }
 
@@ -199,15 +200,15 @@ public class RequirementLoader {
                   },
                   "block.minecraft.anvil": {
                     "skill": "Magic",
-                    "level": 65
+                    "level": 55
                   },
                   "block.minecraft.chipped_anvil": {
                     "skill": "Magic",
-                    "level": 65
+                    "level": 55
                   },
                   "block.minecraft.damaged_anvil": {
                     "skill": "Magic",
-                    "level": 65
+                    "level": 55
                   }
                 }
                 """;

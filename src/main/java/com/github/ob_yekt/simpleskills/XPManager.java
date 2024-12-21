@@ -113,6 +113,7 @@ public class XPManager {
 
             player.sendMessage(Text.of(levelUpMessage), false);
             Simpleskills.LOGGER.info("Player {} leveled up in {}! New level: {}", playerUuid, skill.name(), newLevel);
+
         }
 
         // Trigger XPChangeListener if it exists
