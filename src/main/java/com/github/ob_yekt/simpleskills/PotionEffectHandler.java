@@ -1,5 +1,6 @@
 package com.github.ob_yekt.simpleskills;
 
+import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -48,7 +49,7 @@ public class PotionEffectHandler {
     }
 
     private static void grantMagicXP(ServerPlayerEntity player) {
-        XPManager.addXpWithNotification(player, Skills.MAGIC, 150);
+        XPManager.addXpWithNotification(player, Skills.MAGIC, (ConfigLoader.getBaseXp(Skills.DEFENSE))*50);
     }
 
     private static void extendPotionEffect(ServerPlayerEntity player, StatusEffectInstance newEffect) {

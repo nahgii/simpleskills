@@ -120,11 +120,14 @@ public class AttributeUpdater {
                     breakSpeed.clearModifiers(); // Clear existing modifiers
                     int miningLevel = XPManager.getSkillLevel(playerUuid, Skills.MINING);
                     if (miningLevel >= 66) {
-                        // Updated logic: Adjust multiplier for instant mining at level 99
-                        double bonusSpeed = (miningLevel - 65) * 0.005; // Reduced multiplier
+                        // Calculate the per-level bonus
+                        double baseBonus = 0.165; // Bonus at level 66
+                        double additionalPerLevel = 0.00367273; // More accurate increment per level
+                        double bonusSpeed = baseBonus + ((miningLevel - 66) * additionalPerLevel);
+
                         breakSpeed.addPersistentModifier(new EntityAttributeModifier(
                                 Identifier.of("simpleskills:mining_bonus"),
-                                Math.min(bonusSpeed, 0.165), // Cap to the new maximum (0.165)
+                                bonusSpeed, // Modified to hit exact 1.28616
                                 EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
                         ));
                     }

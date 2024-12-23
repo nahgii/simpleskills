@@ -1,6 +1,7 @@
 package com.github.ob_yekt.simpleskills;
 
 import com.github.ob_yekt.simpleskills.data.DatabaseManager;
+import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import com.github.ob_yekt.simpleskills.requirements.RequirementLoader;
 import com.github.ob_yekt.simpleskills.requirements.SkillRequirement;
 
@@ -183,11 +184,12 @@ public class PlayerEventHandlers {
                     return;
                 }
             }
-
             // Grant XP for ores or other blocks
             if (isOre) {
-                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (int) (10 * xpMultiplier));
-            } else if (!blockTranslationKey.contains("button")
+                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (int) (ConfigLoader.getBaseXp(Skills.MINING) * xpMultiplier));
+            }
+
+            else if (!blockTranslationKey.contains("button")
                     && (blockTranslationKey.contains("stone")
                     || blockTranslationKey.contains("obsidian")
                     || blockTranslationKey.contains("Netherite")
@@ -206,9 +208,9 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("blackstone")
                     || blockTranslationKey.contains("copper")))
             {
-                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, 10);
-
-            } else if (!blockTranslationKey.contains("leaves")
+                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (ConfigLoader.getBaseXp(Skills.MINING)));
+            }
+            else if (!blockTranslationKey.contains("leaves")
                     && !blockTranslationKey.contains("enchanting")
                     && !blockTranslationKey.contains("sign")
                     && !blockTranslationKey.contains("sapling")
@@ -246,9 +248,9 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("crimson")
                     || blockTranslationKey.contains("warped")))
             {
-                XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, 15);
-
-            } else if (blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
+                XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, (ConfigLoader.getBaseXp(Skills.WOODCUTTING)));
+            }
+            else if (blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
                     || blockTranslationKey.contains("gravel")
                     || blockTranslationKey.contains("clay")
                     || blockTranslationKey.contains("podzol")
@@ -258,7 +260,7 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("mud")
                     || blockTranslationKey.contains("grass_block")
                     || blockTranslationKey.contains("soil")) {
-                XPManager.addXpWithNotification(serverPlayer, Skills.EXCAVATING, 10);
+                XPManager.addXpWithNotification(serverPlayer, Skills.EXCAVATING, (ConfigLoader.getBaseXp(Skills.EXCAVATING)));
             }
         });
     }
@@ -287,8 +289,8 @@ public class PlayerEventHandlers {
         // If the player is blocking with a shield, grant shield block XP
         if (isShieldBlocking(player)) {
             if (!isInvalidShieldBlockingSource(source)) {
-                float shieldXpMultiplier = 1.25f;
-                int xpGained = Math.round(damageAmount * shieldXpMultiplier);
+                float shieldXpMultiplier = 0.75f;
+                int xpGained = Math.round(damageAmount * (ConfigLoader.getBaseXp(Skills.DEFENSE)) * shieldXpMultiplier);
                 XPManager.addXpWithNotification(player, Skills.DEFENSE, xpGained); // Add Shield Defense XP
             }
             return; // Shield block XP granted, no further Defense XP
@@ -305,8 +307,7 @@ public class PlayerEventHandlers {
         // Grant Defense XP if the player has any armor equipped
         if (armorCount > 0) {
             float armorMultiplier = 1.0f + (0.25f * armorCount); // Bonus scaling for more armor
-            float xpMultiplier = 2f; // Base multiplier for defense XP
-            int xpGained = Math.round(damageAmount * xpMultiplier * armorMultiplier);
+            int xpGained = Math.round(damageAmount * (ConfigLoader.getBaseXp(Skills.DEFENSE)) * armorMultiplier);
 
             // Add Defense XP using the centralized method
             XPManager.addXpWithNotification(player, Skills.DEFENSE, xpGained);
@@ -366,7 +367,7 @@ public class PlayerEventHandlers {
 
                 // Grant Slaying XP if the target is NOT an Armor Stand
                 if (!(target instanceof net.minecraft.entity.decoration.ArmorStandEntity)) {
-                    int xpGained = Math.round(damageAmount); // 1 XP per damage point
+                    int xpGained = Math.round(damageAmount*(ConfigLoader.getBaseXp(Skills.SLAYING))); // XP per damage point
                     XPManager.addXpWithNotification(attacker, Skills.SLAYING, xpGained); // Grant Slaying XP
                 }
             }

@@ -44,11 +44,26 @@ public class SimpleskillsCommands {
 
                         // Add sub-command for querying total level
                         .then(CommandManager.literal("query")
+                                .requires(source -> source.hasPermissionLevel(0)) // Allow everyone to access "query"
                                 .then(CommandManager.argument("targets", StringArgumentType.string())
                                         .suggests((context, builder) -> CommandSource.suggestMatching(getOnlinePlayerNames(context), builder))
+                                        .then(CommandManager.argument("skill", StringArgumentType.word())
+                                                .suggests((context, builder) -> CommandSource.suggestMatching(getValidSkillsAndTotal(), builder))
+                                                .executes(context -> {
+                                                    String skillName = StringArgumentType.getString(context, "skill");
 
-                                        .then(CommandManager.literal("total")
-                                                .executes(SimpleskillsCommands::queryTotalLevel))))));
+                                                    if (skillName.equalsIgnoreCase("total")) {
+                                                        // Query total level
+                                                        return queryTotalLevel(context);
+                                                    } else {
+                                                        // Query a specific skill
+                                                        return querySkill(context);
+                                                    }
+                                                }))))));
+        }
+        private static List<String> getValidSkillsAndTotal() {
+        return Stream.concat(Stream.of("total"),      // Add "total" as a valid skill
+                Stream.of(Skills.values()).map(Skills::name).map(String::toLowerCase)).toList();
     }
 
     private static int addXp(CommandContext<ServerCommandSource> context) {
@@ -97,7 +112,7 @@ public class SimpleskillsCommands {
         SkillTabMenu.updateTabMenu(targetPlayer);
 
         return 1;
-        }
+    }
 
     private static int querySkill(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();

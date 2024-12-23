@@ -20,6 +20,9 @@ public class Simpleskills implements ModInitializer {
 		RequirementLoader.loadRequirements();
 		LOGGER.info("Loaded requirements from JSON files!");
 
+		// Load XP values on startup
+		com.github.ob_yekt.simpleskills.requirements.ConfigLoader.loadBaseXpConfig(); // Load the JSON configuration
+
 		// Register event handlers
 		PlayerEventHandlers.registerEvents();
 		LOGGER.info("Events registered!");

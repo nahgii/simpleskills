@@ -3,6 +3,7 @@ package com.github.ob_yekt.simpleskills.mixin;
 import com.github.ob_yekt.simpleskills.Skills;
 import com.github.ob_yekt.simpleskills.XPManager;
 
+import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
@@ -73,9 +74,8 @@ public class LecternInteractionMixin {
 
         // Check if the player has any XP at all
         if (totalXP > 0) {
-            // Conversion rate (e.g., 1 XP = 5 Magic XP, adjust if needed).
-            int conversionRate = 4;
-            int convertedXP = totalXP * conversionRate;
+            // Conversion rate.
+            int convertedXP = totalXP * (ConfigLoader.getBaseXp(Skills.MAGIC));
 
             // Reset the player's vanilla XP (ensure proper XP removal).
             player.setExperienceLevel(0);

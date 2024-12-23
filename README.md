@@ -1,8 +1,8 @@
-# SimpleSkills Mod for Minecraft 1.21.4
+# Simpleskills Mod for Minecraft 1.21.4
 
-SimpleSkills is a **Fabric mod** that prolongs your Minecraft experience with a familiar RPG-style skilling system. Master skills such as `Woodcutting`, `Magic`, or `Slaying` by leveling up through gameplay. Unlock tools, armor, and weapons as you progress, giving you a sense of achievement with every milestone.
+Simpleskills is a **Fabric mod** that prolongs your Minecraft experience with a familiar RPG-style skilling system. Master skills such as `Woodcutting`, `Magic`, or `Slaying` by leveling up through gameplay. Unlock tools, armor, and weapons as you progress, giving you a sense of achievement with every milestone.
 
-This mod is performance-friendly, **does not utilize server ticks or client ticks**, and is lightweight. SimpleSkills works in both **multiplayer and singleplayer**. Installation is **not** necessary to join a server running SimpleSkills.
+This mod is performance-friendly, **does not utilize server ticks or client ticks**, and is lightweight. Simpleskills works in both **multiplayer and singleplayer**. Installation is **not** necessary to join a server running simpleskills.
 
 ---
 
@@ -114,6 +114,7 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 | Breaking Speed  | Mining      | +28%  |
 | Movement Speed  | Excavating  | +33%  |
 | Fall Reduction  | Magic       | +100% |
+
 **Details**
 * Slaying: 33% more damage at level 99 (1% per level)
 * Woodcutting: Increases block interaction range per level. Base level is 4.5.
@@ -136,7 +137,13 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 
 ## Customization
 
-Customize all skill requirements in JSON configuration files generated upon the mod's first run. You’ll find these files in the `/mods/simpleskills/` folder.
+To customize skill requirements and XP progression in SimpleSkills, follow these steps:
+
+1. **Launch the game or server**: Run the game or server at least once to allow the mod to generate the necessary JSON files.
+2. **Close the game or server**: Exit the game or shutdown the server once the JSON files are generated.
+3. **Locate the JSON files**: You will find the JSON files in the `/mods/simpleskills/` folder.
+4. **Edit the JSON files**: Use a text editor to make changes to the files to customize the mod to your preferences.
+5. **Start the game or server**: After editing the files, restart the game or server for the changes to take effect.
 
 | File Name                               | Purpose                                                            |
 |-----------------------------------------|--------------------------------------------------------------------|
@@ -144,18 +151,12 @@ Customize all skill requirements in JSON configuration files generated upon the 
 | `simpleskills_weapon_requirements.json` | Define skill requirements for weapons.                             |
 | `simpleskills_armor_requirements.json`  | Define skill requirements for armor.                               |
 | `simpleskills_magic_requirements.json`  | Define skill requirements for magic unlocks (e.g., brewing stand). |
-
-### Example Entry:
-```json
-{
-  "minecraft:diamond_pickaxe": { "skill": "Mining", "level": 45 }
-}
-```
+| `simpleskills_magic_requirements.json`  | Define skill requirements for magic unlocks (e.g., brewing stand). |
+| `base_xp.json`                          | Set XP progression values for levels.                              |
 
 These values are **easy to edit** with a text editor, allowing you to set custom requirements that align perfectly with your server or gameplay preferences.
 
 ---
-
 ## Commands
 
 SimpleSkills provides a set of easy-to-use commands for server admins:
