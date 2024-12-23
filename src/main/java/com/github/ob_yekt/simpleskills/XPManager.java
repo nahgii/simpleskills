@@ -120,6 +120,8 @@ public class XPManager {
         if (onXpChangeListener != null) {
             onXpChangeListener.accept(player, skill);
         }
+        // Update the tab menu after XP or level change
+        SkillTabMenu.updateTabMenu(player);
     }
 
     // Existing method to get a player's skill level

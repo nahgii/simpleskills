@@ -172,7 +172,7 @@ Commands require a permission level of `/op` or `/level 2`.
 ## Performance and Uninstalling
 
 ### Performance-Friendly:
-SimpleSkills is optimized and **does not utilize server ticks or client ticks**, ensuring no performance issues even on large servers.
+SimpleSkills is optimized and **does not utilize server ticks**, ensuring no performance issues even on large servers. For singleplayer use, client ticks are only utilized to update the scoreboard.
 
 ### Easy and Clean to Uninstall:
 1. Remove the `.jar` file from your `mods` folder.
