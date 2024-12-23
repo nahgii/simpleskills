@@ -24,6 +24,10 @@ public class Simpleskills implements ModInitializer {
 		PlayerEventHandlers.registerEvents();
 		LOGGER.info("Events registered!");
 
+		// Register attributes on respawn
+		AttributeUpdater.registerPlayerEvents();
+		LOGGER.info("Attributes on respawn registered!");
+
 		// Register commands
 		SimpleskillsCommands.registerCommands();
 		LOGGER.info("Commands registered!");

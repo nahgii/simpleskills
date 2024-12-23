@@ -20,7 +20,6 @@ public class RequirementLoader {
     private static Map<String, SkillRequirement> armorRequirements = new ConcurrentHashMap<>();
     private static Map<String, SkillRequirement> weaponRequirements = new ConcurrentHashMap<>();
     private static Map<String, SkillRequirement> magicRequirements = new ConcurrentHashMap<>();
-    private static Map<Integer, Integer> xpRequirements = new ConcurrentHashMap<>();
 
     // Load all JSON configuration files
     public static void loadRequirements() {

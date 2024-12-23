@@ -1,5 +1,8 @@
 package com.github.ob_yekt.simpleskills;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -7,6 +10,51 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class AttributeUpdater {
+
+    public static void registerPlayerEvents() {
+        // Register Attributes Application After Respawn or Join
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) { // Ensure this is called only after player respawns
+                applySkillAttributes(newPlayer);
+            }
+        });
+
+        // Register Attributes Clearing During Disconnect
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            clearSkillAttributes(handler.getPlayer());
+        });
+
+        // Register Attributes Application When a Player Joins
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+            applySkillAttributes(newPlayer);
+        });
+    }
+
+    // Apply skill-based attribute updates
+    public static void applySkillAttributes(ServerPlayerEntity player) {
+        for (Skills skill : Skills.values()) { // Assuming Skills is an enum
+            updatePlayerAttributes(player, skill);
+        }
+    }
+
+    // Clear all skill-based attributes (called on disconnect)
+    public static void clearSkillAttributes(ServerPlayerEntity player) {
+        for (Skills skill : Skills.values()) {
+            EntityAttributeInstance attributeInstance = switch (skill) {
+                case SLAYING -> player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE);
+                case WOODCUTTING -> player.getAttributeInstance(EntityAttributes.BLOCK_INTERACTION_RANGE);
+                case DEFENSE -> player.getAttributeInstance(EntityAttributes.MAX_HEALTH);
+                case MINING -> player.getAttributeInstance(EntityAttributes.BLOCK_BREAK_SPEED);
+                case EXCAVATING -> player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+                case MAGIC -> player.getAttributeInstance(EntityAttributes.FALL_DAMAGE_MULTIPLIER);
+            };
+
+            // Clear all modifiers for the relevant attribute
+            if (attributeInstance != null) {
+                attributeInstance.clearModifiers();
+            }
+        }
+    }
 
     public static void updatePlayerAttributes(ServerPlayerEntity player, Skills skill) {
         String playerUuid = player.getUuidAsString();
