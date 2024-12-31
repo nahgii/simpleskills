@@ -28,20 +28,19 @@ public class XPManager {
 
     public static int getExperienceForLevel(int level) {
         if (level == 0) return 0;
-        double baseXp = 100; // Base XP
-        int doublingInterval = 10; // Levels after which XP requirements double
-        int levelsToDouble = level / doublingInterval; // How many times XP has doubled
+
+        double baseXp = 100;
+        double levelScaling = Math.pow(2, Math.floor(level / 10)); // Doubles every 10 levels
 
         if (level <= 65) {
-            // Calculate the XP scaling with the doubling factor
-            double adjustedBaseXp = baseXp * Math.pow(2, levelsToDouble);
-            return (int) Math.floor(adjustedBaseXp * Math.pow(level, 1.6));
+            // Increased power from 1.6 to 1.8 for steeper early game curve
+            return (int) Math.floor(baseXp * Math.pow(level, 1.8) * levelScaling);
         } else {
-            // For levels beyond 65, maintain the doubling factor
-            int xpAt65 = (int) Math.floor(baseXp * Math.pow(2, 65 / doublingInterval) * Math.pow(65, 1.6));
+            int xpAt65 = (int) Math.floor(baseXp * Math.pow(65, 1.8) * Math.pow(2, Math.floor(65 / 10)));
             double levelsAbove65 = level - 65;
-            double additionalXp = 5000 * Math.pow(levelsAbove65, 1.65) + 15000 * levelsAbove65;
-            return xpAt65 + (int) Math.floor(additionalXp);
+            // Increased power from 1.55 to 1.75 and multiplier from 2500 to 3500
+            double additionalXp = 3500 * Math.pow(levelsAbove65, 1.75) + 15000 * levelsAbove65;
+            return xpAt65 + (int) Math.floor(additionalXp * levelScaling);
         }
     }
 
