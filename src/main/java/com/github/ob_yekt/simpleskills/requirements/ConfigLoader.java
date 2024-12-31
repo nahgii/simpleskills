@@ -63,12 +63,12 @@ public class ConfigLoader {
     private static String getDefaultConfig() {
         // The default Base XP values for each skill
         return "{\n" +
-                "    \"WOODCUTTING\": 15,\n" +
-                "    \"EXCAVATING\": 10,\n" +
-                "    \"MINING\": 10,\n" +
-                "    \"SLAYING\": 1,\n" +
-                "    \"DEFENSE\": 1,\n" +
-                "    \"MAGIC\": 5\n" +
+                "    \"WOODCUTTING\": 30,\n" +
+                "    \"EXCAVATING\": 20,\n" +
+                "    \"MINING\": 25,\n" +
+                "    \"SLAYING\": 8,\n" +
+                "    \"DEFENSE\": 10,\n" +
+                "    \"MAGIC\": 8\n" +
                 "}";
     }
 }
