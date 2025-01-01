@@ -30,17 +30,15 @@ public class XPManager {
         if (level == 0) return 0;
 
         double baseXp = 100;
-        double levelScaling = Math.pow(2, Math.floor(level / 10)); // Doubles every 10 levels
 
-        if (level <= 65) {
-            // Increased power from 1.6 to 1.8 for steeper early game curve
-            return (int) Math.floor(baseXp * Math.pow(level, 1.8) * levelScaling);
+        if (level <= 10) {
+            // Early game: gentle scaling
+            return (int) Math.floor(baseXp * Math.pow(level, 1.4)); // Slightly steeper curve
         } else {
-            int xpAt65 = (int) Math.floor(baseXp * Math.pow(65, 1.8) * Math.pow(2, Math.floor(65 / 10)));
-            double levelsAbove65 = level - 65;
-            // Increased power from 1.55 to 1.75 and multiplier from 2500 to 3500
-            double additionalXp = 3500 * Math.pow(levelsAbove65, 1.75) + 15000 * levelsAbove65;
-            return xpAt65 + (int) Math.floor(additionalXp * levelScaling);
+            // Mid to late game: moderate scaling
+            int earlyXp = (int) Math.floor(baseXp * Math.pow(10, 1.4)); // XP required for level 10
+            double harderScaling = Math.pow(level - 10, 1.65); // Adjust exponent for smoother growth
+            return earlyXp + (int) Math.floor(harderScaling * 275); // Adjust multiplier for balanced difficulty
         }
     }
 

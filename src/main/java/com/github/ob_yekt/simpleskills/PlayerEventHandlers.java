@@ -197,7 +197,6 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("prismarine")
                     || blockTranslationKey.contains("purpur")
                     || blockTranslationKey.contains("amethyst")
-                    || blockTranslationKey.contains("terracotta")
                     || blockTranslationKey.contains("basalt")
                     || blockTranslationKey.contains("deepslate")
                     || blockTranslationKey.contains("granite")
