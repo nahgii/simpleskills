@@ -192,8 +192,9 @@ public class PlayerEventHandlers {
             else if (!blockTranslationKey.contains("button")
                     && (blockTranslationKey.contains("stone")
                     || blockTranslationKey.contains("obsidian")
-                    || blockTranslationKey.contains("Netherite")
-                    || blockTranslationKey.contains("Debris")
+                    || blockTranslationKey.contains("netherite")
+                    || blockTranslationKey.contains("debris")
+                    || blockTranslationKey.contains("tuff")
                     || blockTranslationKey.contains("prismarine")
                     || blockTranslationKey.contains("purpur")
                     || blockTranslationKey.contains("amethyst")
@@ -248,7 +249,8 @@ public class PlayerEventHandlers {
             {
                 XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, (ConfigLoader.getBaseXp(Skills.WOODCUTTING)));
             }
-            else if (blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
+            else if (blockTranslationKey.contains("dirt")
+                    || blockTranslationKey.contains("sand")
                     || blockTranslationKey.contains("gravel")
                     || blockTranslationKey.contains("clay")
                     || blockTranslationKey.contains("podzol")
