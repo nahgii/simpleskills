@@ -64,11 +64,11 @@ public class ConfigLoader {
         // The default Base XP values for each skill
         return "{\n" +
                 "    \"WOODCUTTING\": 30,\n" +
-                "    \"EXCAVATING\": 20,\n" +
-                "    \"MINING\": 25,\n" +
+                "    \"EXCAVATING\": 15,\n" +
+                "    \"MINING\": 15,\n" +
                 "    \"SLAYING\": 8,\n" +
                 "    \"DEFENSE\": 10,\n" +
-                "    \"MAGIC\": 8\n" +
+                "    \"MAGIC\": 4\n" +
                 "}";
     }
 }

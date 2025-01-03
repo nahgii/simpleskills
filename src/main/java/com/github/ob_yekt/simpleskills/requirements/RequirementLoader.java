@@ -101,18 +101,21 @@ public class RequirementLoader {
                 {
                 "minecraft:wooden_pickaxe": {"skill": "Mining", "level": 0},
                 "minecraft:stone_pickaxe": {"skill": "Mining", "level": 10},
+                "minecraft:golden_pickaxe": {"skill": "Mining", "level": 15},
                 "minecraft:iron_pickaxe": {"skill": "Mining", "level": 20},
                 "minecraft:diamond_pickaxe": {"skill": "Mining", "level": 45},
                 "minecraft:netherite_pickaxe": {"skill": "Mining", "level": 65},
                 
                 "minecraft:wooden_axe": {"skill": "Woodcutting", "level": 0},
                 "minecraft:stone_axe": {"skill": "Woodcutting", "level": 10},
+                "minecraft:golden_axe": {"skill": "Woodcutting", "level": 15},
                 "minecraft:iron_axe": {"skill": "Woodcutting", "level": 20},
                 "minecraft:diamond_axe": {"skill": "Woodcutting", "level": 45},
                 "minecraft:netherite_axe": {"skill": "Woodcutting", "level": 65},
                 
                 "minecraft:wooden_shovel": {"skill": "Excavating", "level": 0},
                 "minecraft:stone_shovel": {"skill": "Excavating", "level": 10},
+                "minecraft:golden_shovel": {"skill": "Excavating", "level": 15},
                 "minecraft:iron_shovel": {"skill": "Excavating", "level": 20},
                 "minecraft:diamond_shovel": {"skill": "Excavating", "level": 45},
                 "minecraft:netherite_shovel": {"skill": "Excavating", "level": 65}
@@ -123,7 +126,7 @@ public class RequirementLoader {
     // Provide default JSON content for armor
     private static String getDefaultArmorRequirements() {
         return """
-                              {
+                {
                 "minecraft:leather_helmet": { "skill": "Defense", "level": 0 },
                 "minecraft:leather_chestplate": { "skill": "Defense", "level": 0 },
                 "minecraft:leather_leggings": { "skill": "Defense", "level": 0 },
@@ -156,7 +159,7 @@ public class RequirementLoader {
                 "minecraft:netherite_chestplate": { "skill": "Defense", "level": 65 },
                 "minecraft:netherite_leggings": { "skill": "Defense", "level": 65 },
                 "minecraft:netherite_boots": { "skill": "Defense", "level": 65 }
-                              }
+                }
                 """;
     }
 

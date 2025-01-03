@@ -203,7 +203,6 @@ public class PlayerEventHandlers {
                     || blockTranslationKey.contains("diorite")
                     || blockTranslationKey.contains("andesite")
                     || blockTranslationKey.contains("brick")
-                    || blockTranslationKey.contains("sandstone")
                     || blockTranslationKey.contains("blackstone")
                     || blockTranslationKey.contains("copper")))
             {
@@ -288,7 +287,7 @@ public class PlayerEventHandlers {
         // If the player is blocking with a shield, grant shield block XP
         if (isShieldBlocking(player)) {
             if (!isInvalidShieldBlockingSource(source)) {
-                float shieldXpMultiplier = 0.75f;
+                float shieldXpMultiplier = 0.5f;
                 int xpGained = Math.round(damageAmount * (ConfigLoader.getBaseXp(Skills.DEFENSE)) * shieldXpMultiplier);
                 XPManager.addXpWithNotification(player, Skills.DEFENSE, xpGained); // Add Shield Defense XP
             }
