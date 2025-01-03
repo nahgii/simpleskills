@@ -4,6 +4,9 @@ Simpleskills is a **Fabric mod** that prolongs your Minecraft experience with a 
 
 This mod is performance-friendly, **does not utilize server ticks or client ticks**, and is lightweight. Simpleskills works in both **multiplayer and singleplayer**. Installation is **not** necessary to join a server running simpleskills.
 
+Direct download at: https://modrinth.com/mod/simpleskills
+
+##  IMPORTANT! Elytra requires level 65 Magic (adjustable in armor_requirements.json) and WILL unequip automatically; don't die to fall damage.
 ---
 
 ## Features
@@ -69,11 +72,12 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 ---
 
 ### **Blocks and Magic Unlocks**
-| Block                     | Skill   | Level |
-|---------------------------|---------|-------|
-| Brewing Stand             | Magic   | 10    |
-| Enchanting Table          | Magic   | 35    |
-| Anvil (all types)         | Magic   | 65    |
+| Block            | Skill   | Level |
+|------------------|---------|-------|
+| Brewing Stand    | Magic   | 10    |
+| Enchanting Table | Magic   | 35    |
+| Anvil            | Magic   | 55    |
+| Elytra           | Magic   | 65    |
 
 ---
 
@@ -92,13 +96,6 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
    - Potion of Water Breathing
    - Potion of Leaping
 
-#### Magic Level Milestones:
-| Level | Unlockable        |
-|-------|-------------------|
-| 10    | Brewing Stand     |
-| 35    | Enchanting Table  |
-| 65    | Anvil             |
-
 **Limits**:
 - **Minimum Duration**: 1 minute (level 0).
 - **Maximum Duration**: 60 minutes (level 60).
@@ -114,6 +111,9 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 | Breaking Speed  | Mining      | +28%  |
 | Movement Speed  | Excavating  | +33%  |
 | Fall Reduction  | Magic       | +100% |
+
+
+
 
 **Details**
 * Slaying: 33% more damage at level 99 (1% per level)
