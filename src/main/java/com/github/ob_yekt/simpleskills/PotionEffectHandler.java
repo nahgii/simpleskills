@@ -49,7 +49,7 @@ public class PotionEffectHandler {
     }
 
     private static void grantMagicXP(ServerPlayerEntity player) {
-        XPManager.addXpWithNotification(player, Skills.MAGIC, (ConfigLoader.getBaseXp(Skills.DEFENSE))*50);
+        XPManager.addXpWithNotification(player, Skills.MAGIC, (ConfigLoader.getBaseXp(Skills.MAGIC))*20);
     }
 
     private static void extendPotionEffect(ServerPlayerEntity player, StatusEffectInstance newEffect) {

@@ -24,23 +24,19 @@ public class XPManager {
 
     }
 
-    ///  XP LOGIC
-
+    /// XP LOGIC
     public static int getExperienceForLevel(int level) {
         if (level == 0) return 0;
 
-        double baseXp = 100;
+        // Constants for scaling
+        double A = 1566.84; // Scaling factor
+        double B = 0.06626; // Growth rate
+        double C = 0.000949; // Smoothing factor
 
-        if (level <= 10) {
-            // Early game: gentle scaling
-            return (int) Math.floor(baseXp * Math.pow(level, 1.4)); // Slightly steeper curve
-        } else {
-            // Mid to late game: moderate scaling
-            int earlyXp = (int) Math.floor(baseXp * Math.pow(10, 1.4)); // XP required for level 10
-            double harderScaling = Math.pow(level - 10, 1.65); // Adjust exponent for smoother growth
-            return earlyXp + (int) Math.floor(harderScaling * 275); // Adjust multiplier for balanced difficulty
-        }
+        // Calculate XP using exponential growth with damping
+        return (int) Math.floor(A * ((Math.exp(B * level) - 1) / (1 + C * level)));
     }
+
 
     // Inverse method to find the level for a given XP amount
     public static int getLevelForExperience(int experience) {

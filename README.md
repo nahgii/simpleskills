@@ -30,30 +30,35 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 | Golden Armor               | Defense    | 10    |
 | Chainmail Armor            | Defense    | 13    |
 | Turtle Shell Helmet        | Defense    | 15    |
-| Iron Armor                 | Defense    | 25    |
+| Iron Armor                 | Defense    | 20    |
 | Diamond Armor              | Defense    | 45    |
 | Netherite Armor            | Defense    | 65    |
 
 ---
 
 ### **Tool Requirements**
-| Tool                       | Skill         | Level |
-|----------------------------|---------------|-------|
-| Wooden Pickaxe             | Mining        | 0     |
-| Stone Pickaxe              | Mining        | 10    |
-| Iron Pickaxe               | Mining        | 20    |
-| Diamond Pickaxe            | Mining        | 45    |
-| Netherite Pickaxe          | Mining        | 65    |
-| Wooden Axe                 | Woodcutting   | 0     |
-| Stone Axe                  | Woodcutting   | 10    |
-| Iron Axe                   | Woodcutting   | 20    |
-| Diamond Axe                | Woodcutting   | 45    |
-| Netherite Axe              | Woodcutting   | 65    |
-| Wooden Shovel              | Excavating    | 0     |
-| Stone Shovel               | Excavating    | 10    |
-| Iron Shovel                | Excavating    | 20    |
-| Diamond Shovel             | Excavating    | 45    |
-| Netherite Shovel           | Excavating    | 65    |
+| Tool              | Skill         | Level |
+|-------------------|---------------|-------|
+| Wooden Pickaxe    | Mining        | 0     |
+| Stone Pickaxe     | Mining        | 10    |
+| Golden Pickaxe    | Mining        | 15    |
+| Iron Pickaxe      | Mining        | 20    |
+| Diamond Pickaxe   | Mining        | 45    |
+| Netherite Pickaxe | Mining        | 65    |
+|                   |               |       |
+| Wooden Axe        | Woodcutting   | 0     |
+| Stone Axe         | Woodcutting   | 10    |
+| Golden Pickaxe    | Mining        | 15    |
+| Iron Axe          | Woodcutting   | 20    |
+| Diamond Axe       | Woodcutting   | 45    |
+| Netherite Axe     | Woodcutting   | 65    |
+|                   |               |       |
+| Wooden Shovel     | Excavating    | 0     |
+| Stone Shovel      | Excavating    | 10    |
+| Golden Pickaxe    | Mining        | 15    |
+| Iron Shovel       | Excavating    | 20    |
+| Diamond Shovel    | Excavating    | 45    |
+| Netherite Shovel  | Excavating    | 65    |
 
 ---
 
@@ -62,7 +67,7 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 |----------------------------|-----------|-------|
 | Wooden Axe/Sword           | Slaying   | 0     |
 | Stone Axe/Sword            | Slaying   | 10    |
-| Golden Axe/Sword           | Slaying   | 12    |
+| Golden Axe/Sword           | Slaying   | 15    |
 | Iron Axe/Sword             | Slaying   | 20    |
 | Diamond Axe/Sword          | Slaying   | 45    |
 | Netherite Axe/Sword        | Slaying   | 65    |
@@ -72,12 +77,15 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 ---
 
 ### **Blocks and Magic Unlocks**
-| Block            | Skill   | Level |
-|------------------|---------|-------|
-| Brewing Stand    | Magic   | 10    |
-| Enchanting Table | Magic   | 35    |
-| Anvil            | Magic   | 55    |
-| Elytra           | Magic   | 65    |
+| Block                  | Skill   | Level |
+|------------------------|---------|-------|
+| Anvil                  | Magic   | 10    |
+| Enchanting Table       | Magic   | 20    |
+| Fortune 1-3 (anvil)    | Magic   | 25    |
+| Protection 1-4 (anvil) | Magic   | 35    |
+| Efficiency 1-5 (anvil) | Magic   | 45    |
+| Mending (anvil)        | Magic   | 55    |
+| Elytra                 | Magic   | 65    |
 
 ---
 
@@ -112,9 +120,6 @@ To increase **Magic skill** players must convert their Vanilla XP by right-click
 | Movement Speed  | Excavating  | +33%  |
 | Fall Reduction  | Magic       | +100% |
 
-
-
-
 **Details**
 * Slaying: 33% more damage at level 99 (1% per level)
 * Woodcutting: Increases block interaction range per level. Base level is 4.5.
@@ -145,14 +150,13 @@ To customize skill requirements and XP progression in SimpleSkills, follow these
 4. **Edit the JSON files**: Use a text editor to make changes to the files to customize the mod to your preferences.
 5. **Start the game or server**: After editing the files, restart the game or server for the changes to take effect.
 
-| File Name                               | Purpose                                                            |
-|-----------------------------------------|--------------------------------------------------------------------|
-| `simpleskills_tool_requirements.json`   | Define skill requirements for tools.                               |
-| `simpleskills_weapon_requirements.json` | Define skill requirements for weapons.                             |
-| `simpleskills_armor_requirements.json`  | Define skill requirements for armor.                               |
-| `simpleskills_magic_requirements.json`  | Define skill requirements for magic unlocks (e.g., brewing stand). |
-| `simpleskills_magic_requirements.json`  | Define skill requirements for magic unlocks (e.g., brewing stand). |
-| `base_xp.json`                          | Set XP progression values for levels.                              |
+| File Name                               | Purpose                                                               |
+|-----------------------------------------|-----------------------------------------------------------------------|
+| `simpleskills_tool_requirements.json`   | Adjust skill requirements for tools.                                  |
+| `simpleskills_weapon_requirements.json` | Adjust skill requirements for weapons.                                |
+| `simpleskills_armor_requirements.json`  | Adjust skill requirements for armor and Elytra.                       |
+| `simpleskills_magic_requirements.json`  | Adjust skill requirements for magic unlocks (e.g., Mending, Anvil...) |
+| `base_xp.json`                          | Adjust XP multipliers for skills.                                     |
 
 These values are **easy to edit** with a text editor, allowing you to set custom requirements that align perfectly with your server or gameplay preferences.
 

@@ -192,25 +192,37 @@ public class RequirementLoader {
     private static String getDefaultMagicRequirements() {
         return """
                 {
-                  "block.minecraft.brewing_stand": {
+                  "minecraft:fortune": {
                     "skill": "Magic",
-                    "level": 10
+                    "level": 25
                   },
-                  "block.minecraft.enchanting_table": {
+                  "minecraft:protection": {
                     "skill": "Magic",
                     "level": 35
                   },
-                  "block.minecraft.anvil": {
+                  "minecraft:efficiency": {
+                    "skill": "Magic",
+                    "level": 45
+                  },
+                  "minecraft:mending": {
                     "skill": "Magic",
                     "level": 55
+                  },
+                  "block.minecraft.enchanting_table": {
+                    "skill": "Magic",
+                    "level": 20
+                  },
+                  "block.minecraft.anvil": {
+                    "skill": "Magic",
+                    "level": 10
                   },
                   "block.minecraft.chipped_anvil": {
                     "skill": "Magic",
-                    "level": 55
+                    "level": 10
                   },
                   "block.minecraft.damaged_anvil": {
                     "skill": "Magic",
-                    "level": 55
+                    "level": 10
                   }
                 }
                 """;

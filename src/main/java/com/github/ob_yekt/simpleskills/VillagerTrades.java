@@ -15,7 +15,7 @@ public class VillagerTrades {
                         new TradeOffer(
                                 new TradedItem(Items.EMERALD, 3), // Cost: 3 emeralds
                                 new ItemStack(Items.BLAZE_POWDER, 1), // Result: 1 blaze powder
-                                16, // Max Uses
+                                8, // Max Uses
                                 2, // Experience
                                 0.075F // Price Multiplier
                         )));
@@ -24,17 +24,17 @@ public class VillagerTrades {
                         new TradeOffer(
                                 new TradedItem(Items.EMERALD, 6), // Cost: 6 emeralds
                                 new ItemStack(Items.NETHER_WART, 1), // Result: 1 nether wart
-                                8, // Max Uses
+                                16, // Max Uses
                                 2, // Experience
                                 0.075F // Price Multiplier
                         )));
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 5,
                 factories -> factories.add((entity, random) ->
                         new TradeOffer(
-                                new TradedItem(Items.EMERALD, 4), // Cost: 4 emeralds
+                                new TradedItem(Items.EMERALD, 8), // Cost: 6 emeralds
                                 new ItemStack(Items.DRAGON_BREATH, 1), // Result: 1 dragon breath
-                                16, // Max Uses
-                                2, // Experience
+                                8, // Max Uses
+                                4, // Experience
                                 0.075F // Price Multiplier
                         )));
     }

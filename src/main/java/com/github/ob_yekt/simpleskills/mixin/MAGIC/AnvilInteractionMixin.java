@@ -1,4 +1,4 @@
-package com.github.ob_yekt.simpleskills.mixin;
+package com.github.ob_yekt.simpleskills.mixin.MAGIC;
 
 import com.github.ob_yekt.simpleskills.Skills;
 import com.github.ob_yekt.simpleskills.XPManager;

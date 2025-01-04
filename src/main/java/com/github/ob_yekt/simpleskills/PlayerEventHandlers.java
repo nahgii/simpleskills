@@ -190,6 +190,7 @@ public class PlayerEventHandlers {
             }
 
             else if (!blockTranslationKey.contains("button")
+                    && !blockTranslationKey.contains("pressure")
                     && (blockTranslationKey.contains("stone")
                     || blockTranslationKey.contains("obsidian")
                     || blockTranslationKey.contains("netherite")
@@ -217,6 +218,7 @@ public class PlayerEventHandlers {
                     && !blockTranslationKey.contains("mangrove_roots")
                     && !blockTranslationKey.contains("propagule")
                     && !blockTranslationKey.contains("button")
+                    && !blockTranslationKey.contains("pressure")
                     && !blockTranslationKey.equals("block.minecraft.bamboo")
                     && !blockTranslationKey.equals("block.minecraft.hanging_roots")
                     && !blockTranslationKey.equals("block.minecraft.crimson_roots")
