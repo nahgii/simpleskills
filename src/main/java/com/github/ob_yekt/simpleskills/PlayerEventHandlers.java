@@ -166,7 +166,7 @@ public class PlayerEventHandlers {
                     }
 
                     int baseXP = ConfigLoader.getBaseXP(relevantSkill);
-                    int reducedXP = (int) (baseXP * 0.01); // Grant 1% of normal XP
+                    int reducedXP = (int) (baseXP * 0 + 1 ); // Grant 1 XP
                     XPManager.addXPWithNotification(serverPlayer, relevantSkill, reducedXP);
                 }
             }
