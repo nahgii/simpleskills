@@ -1,38 +1,69 @@
-# Simpleskills Mod for Minecraft 1.21.4
+# simpleskills Mod for Minecraft 1.21.4
 
-Simpleskills is a **Fabric mod** that prolongs your Minecraft experience with a familiar RPG-style skilling system. Master skills such as `Woodcutting`, `Magic`, or `Slaying` by leveling up through gameplay. Unlock tools, armor, and weapons as you progress, giving you a sense of achievement with every milestone.
+simpleskills is a **Fabric mod** introducing a familiar RPG-style skilling system to Minecraft, enhancing gameplay with meaningful progression. Master skills like `Woodcutting`, `Magic`, `Slaying`, and more. Unlock tools, armor, weapons, and perks as you level up, creating a rewarding sense of achievement.
 
-This mod is performance-friendly, **does not utilize server ticks or client ticks**, and is lightweight. Simpleskills works in both **multiplayer and singleplayer**. Installation is **not** necessary to join a server running simpleskills.
+This lightweight, performance-friendly mod works seamlessly in both **multiplayer and singleplayer**. Players do not need to install the mod when joining a server running Simpleskills.
 
-Direct download at: https://modrinth.com/mod/simpleskills
+---
 
-##  IMPORTANT! Elytra requires level 65 Magic (adjustable in armor_requirements.json) and WILL unequip automatically; don't die to fall damage.
+**Direct download: [Modrinth](https://modrinth.com/mod/simpleskills)**
+
+---
+
+## Patch Notes (v1.1.0)
+**Classes & Perks**:
+* 7 classes, 22 perks
+
+**New HUD Options**:
+* Enhanced HUD toggling mechanics with `/simpleskills togglehud`. Now compatible across server-client boundaries.
+
+**Ironman Mode**
+* Add more challenge by losing all skills on death with this optional feature.
+
+**Commands**:
+* Many commands, see #Commands section
+
+**Overall Adjustments**:
+* XP Scaling rework (you might have to delete your old database, but you can set your skills to appropriate levels with commands. if cheats are disabled on SP world -> open to LAN, enable cheats)
+* XP now uses the exact same formula as OSRS
+* Table for XP _(helpful for customizing base XP and unlock levels)_: https://docs.google.com/spreadsheets/d/1X0bJeM7FzuCeVRRfzInzpgxQvYY5CBWjMu23QnihAkg/edit?usp=sharing
+* Base XP (base_xp.json) is configurable and aims for 60k XP/H when the skill is being **focused** on
+* magic_requirements.json allows you to limit exact enchantments (ID, level of enchant) allowed for anvils by magic level
+* Adjusted Cleric trades:  Nether Wart more max uses,  Blaze Powder less max uses,  Dragon Breath costs more and has fewer uses
+
 ---
 
 ## Features
+- **🖥️ FULLY SERVERSIDE**: simpleskills does not require server players to download the mod nor Fabric.
+- **📜 Skill Progression**: Level up skills like `Defense`, `Woodcutting`, `Mining`, `Excavating`, `Slaying`, `Farming`, and `Magic`.
+- **⚔ Tiered Equipment System**: Unlock tools, armor, and weapons based on skill levels.
+- **🎮Highly Customizable**: Edit JSON files to tweak progression, requirements, and enabled features.
+- **🔮 Magic Skill Enhancements**: Improve potion durations, enchantments, and unlock utility blocks like the Anvil and Enchanting Table.
+- **🔋 Performance Optimization**: Doesn't use server or client ticks, ensuring minimal overhead.
+- **📊 HUD Toggle**: Enable or disable HUD in singleplayer (default key: `TAB`) or multiplayer (`/simpleskills togglehud`).
+- **🌎 World-Specific Stats**: Skills are saved per world, not globally.
+- **💀 Ironman Mode**: Reset skills upon death for a hardcore experience.`(OPTIONAL)`
+- **💪 Unique Classes and Perks**: Choose from distinct classes with gameplay-altering perks. `(OPTIONAL)`
+- **🧹Clean Uninstallation**: simpleskills performs unintrusive modifications that get reset whenever you log out.*
 
-- 📜 **Skill Progression**: Earn XP in skills including `Defense`, `Woodcutting`, `Mining`, `Excavating`, `Slaying`, and `Magic`.
-- ⚔ **Tool, Weapon, and Armor Requirements**: Tiered system based on skill levels to equip items and blocks.
-- 🔮 **Magic Skill**: Enhance potion effects and unlock utility blocks like the Anvil, Brewing Stand, and Enchanting Table at specific Magic levels.
-- 🎮 **Customizable Requirements**: Edit JSON files to easily tweak skill requirements or progression for your server.
-- 🔋 **Performance Optimization**: Doesn't use server or client ticks, ensuring minimal overhead.
-- 💪 **Passive Abilities**: after unlocking everything at level 65, players gain bonuses until the maximum level of 99 per skill.
+#### * Cleric Villager trades must be manually reset if the 'villager_trades' is set to TRUE in config.json
+
 ---
 
 ## Skill Requirements
 
-Below are the **default skill requirements** for equipping armor, tools, weapons, and unlocking blocks. These requirements are fully customizable via JSON files to suit your server or singleplayer needs (details on file locations below).
+Below are the **default skill requirements** for equipping armor, tools, weapons, and unlocking blocks. Requirements are fully customizable via JSON files.
 
 ### **Armor Requirements**
 | Armor                      | Skill      | Level |
 |----------------------------|------------|-------|
 | Leather Armor              | Defense    | 0     |
-| Golden Armor               | Defense    | 10    |
-| Chainmail Armor            | Defense    | 13    |
-| Turtle Shell Helmet        | Defense    | 15    |
-| Iron Armor                 | Defense    | 20    |
-| Diamond Armor              | Defense    | 45    |
-| Netherite Armor            | Defense    | 65    |
+| Golden Armor               | Defense    | 15    |
+| Chainmail Armor            | Defense    | 15    |
+| Turtle Shell Helmet        | Defense    | 35    |
+| Iron Armor                 | Defense    | 35    |
+| Diamond Armor              | Defense    | 60    |
+| Netherite Armor            | Defense    | 75    |
 
 ---
 
@@ -42,154 +73,189 @@ Below are the **default skill requirements** for equipping armor, tools, weapons
 | Wooden Pickaxe    | Mining        | 0     |
 | Stone Pickaxe     | Mining        | 10    |
 | Golden Pickaxe    | Mining        | 15    |
-| Iron Pickaxe      | Mining        | 20    |
-| Diamond Pickaxe   | Mining        | 45    |
-| Netherite Pickaxe | Mining        | 65    |
-|                   |               |       |
-| Wooden Axe        | Woodcutting   | 0     |
-| Stone Axe         | Woodcutting   | 10    |
-| Golden Pickaxe    | Mining        | 15    |
-| Iron Axe          | Woodcutting   | 20    |
-| Diamond Axe       | Woodcutting   | 45    |
-| Netherite Axe     | Woodcutting   | 65    |
-|                   |               |       |
-| Wooden Shovel     | Excavating    | 0     |
-| Stone Shovel      | Excavating    | 10    |
-| Golden Pickaxe    | Mining        | 15    |
-| Iron Shovel       | Excavating    | 20    |
-| Diamond Shovel    | Excavating    | 45    |
-| Netherite Shovel  | Excavating    | 65    |
+| Iron Pickaxe      | Mining        | 30    |
+| Diamond Pickaxe   | Mining        | 60    |
+| Netherite Pickaxe | Mining        | 75    |
 
 ---
 
 ### **Weapon Requirements**
-| Weapon                     | Skill     | Level |
-|----------------------------|-----------|-------|
-| Wooden Axe/Sword           | Slaying   | 0     |
-| Stone Axe/Sword            | Slaying   | 10    |
-| Golden Axe/Sword           | Slaying   | 15    |
-| Iron Axe/Sword             | Slaying   | 20    |
-| Diamond Axe/Sword          | Slaying   | 45    |
-| Netherite Axe/Sword        | Slaying   | 65    |
-| Bow                        | Slaying   | 12    |
-| Mace                       | Slaying   | 35    |
+| Weapon              | Skill     | Level |
+|---------------------|-----------|-------|
+| Wooden Axe/Sword    | Slaying   | 0     |
+| Stone Axe/Sword     | Slaying   | 10    |
+| Golden Axe/Sword    | Slaying   | 15    |
+| Iron Axe/Sword      | Slaying   | 30    |
+| Diamond Axe/Sword   | Slaying   | 60    |
+| Netherite Axe/Sword | Slaying   | 75    |
+| Crossbow            | Slaying   | 5     |
+| Bow                 | Slaying   | 20    |
+| Mace                | Slaying   | 35    |
 
 ---
 
-### **Blocks and Magic Unlocks**
+### **Magic Skill**
+Duration of Level I potions increases by 1 minute per Magic level (up to 60 minutes).
+
+Affected Potions:
+
+*   Potion of Fire Resistance
+*   Potion of Strength
+*   Potion of Swiftness
+*   Potion of Night Vision
+*   Potion of Invisibility
+*   Potion of Water Breathing
+*   Potion of Leaping
+
+Gain Magic XP by:
+- Enchanting items.
+- Applying potion effects.
+
 | Block                  | Skill   | Level |
 |------------------------|---------|-------|
 | Anvil                  | Magic   | 10    |
 | Enchanting Table       | Magic   | 20    |
-| Fortune 1-3 (anvil)    | Magic   | 25    |
-| Protection 1-4 (anvil) | Magic   | 35    |
-| Efficiency 1-5 (anvil) | Magic   | 45    |
-| Mending (anvil)        | Magic   | 55    |
+| Fortune III (anvil)    | Magic   | 35    |
+| Protection IV (anvil)  | Magic   | 50    |
+| Efficiency V (anvil)   | Magic   | 55    |
+| Mending (anvil)        | Magic   | 60    |
 | Elytra                 | Magic   | 65    |
 
----
-
-### Magic Skill: Potion Durations and Unlocks
-
-The **Magic skill** allows players to enhance their gameplay through positive potion effects and unlock useful vanilla blocks.
-To increase **Magic skill** players must convert their Vanilla XP by right-clicking on an empty lectern with an empty hand. Players can also gain **Magic skill** XP through potion effect application.
-- **Duration Increase**: The maximum duration of positive potion effects applied to the player is increased based on their Magic level starting from level 1. Players can drink multiple level I potions to extend durations in minutes equal to their Magic level.
-- **Adjusted Trades**: Novice clerics can now offer Nether Wart and Blaze powder, and Master clerics can offer Dragon's Breath.
-- **Affected Potions (Level I Only)**:
-   - Potion of Fire Resistance
-   - Potion of Strength
-   - Potion of Swiftness
-   - Potion of Night Vision
-   - Potion of Invisibility
-   - Potion of Water Breathing
-   - Potion of Leaping
-
-**Limits**:
-- **Minimum Duration**: 1 minute (level 0).
-- **Maximum Duration**: 60 minutes (level 60).
 
 ---
 
-### **Passive Abilities**
-| Attribute bonus | Skill       | MAX   |
-|-----------------|-------------|-------|
-| Attack Damage   | Slaying     | +33%  |
-| Block Range     | Woodcutting | 7.0   |
-| Max Health      | Defense     | 8 HP  |
-| Breaking Speed  | Mining      | +28%  |
-| Movement Speed  | Excavating  | +33%  |
-| Fall Reduction  | Magic       | +100% |
+## Passive Attributes
 
-**Details**
-* Slaying: 33% more damage at level 99 (1% per level)
-* Woodcutting: Increases block interaction range per level. Base level is 4.5.
-* Defense: Gain 2 health (1 heart) every 10 levels starting from 66 to a total of 8 health (4 hearts) at level 99.
-* Mining: Gain faster block breaking speed per level. At level 99 you can instantly mine stone with a Netherite Pickaxe with Efficiency V (similar to Haste II).
-* Excavating: +1% movement speed per level (+33% at level 99).
-* Magic: Gain fall damage reduction based on level: lvl 66-75: 25%, lvl 76-85: 50%, lvl 86-98: 75%, lvl 99: 100%.
+Each skill offers unique passive bonuses at higher levels:
 
-## Installation
+| Attribute Bonus      | Skill       | Per Level      | Max Bonus        |
+|----------------------|-------------|----------------|------------------|
+| **Attack Damage**    | Slaying     | +1%            | +25%             |
+| **Block Range**      | Woodcutting | +0.1 block/LVL | 7.0 blocks       |
+| **Max Health**       | Defense     | +2HP /8LVLS    | +8 HP (4 hearts) |
+| **Breaking Speed**   | Mining      | +1.1%          | +28.6%           |
+| **Movement Speed**   | Excavating  | +1%            | +25%             |
+| **Knockback Resist** | Farming     | +1%            | +25%             |
+| **Fall Reduction**   | Magic       | -1%            | -25%             |
+
+---
+
+## Classes and Perks
+`CLASSES AND PERKS CAN BE DISABLED IN THE CONFIG.JSON ! (Enabled by default)`
+### Peasant (None)
+- Default class
+### Knight (Defense)
+- **Hamstring**: Apply Slowness for 4 seconds with melee hits.
+- **Heavy Bolts**: +45% crossbow damage.
+- **Patronage**: Better deals with villagers.
+- **Rigid Arsenal**: Cannot use tridents or bows.
+
+### Rogue (Slaying)
+- **Stealth**: Invisibility and faster sneaking speed.
+- **Poison Strike**: Apply Wither II for 4 seconds while invisible.
+- **Flash Powder**: Breaks all aggro of mobs within the radius. 12sec cooldown, 10 block radius, 1 Glowstone Dust per use.
+- **Slim Physique**: Max health reduced by 40%.
+
+### Farmhand (Farming)
+- **Fortitude**: Minimum hunger of 7.
+- **Rustic Temperament**: -30% Magic XP gain.
+
+### Lumberjack (Woodcutting)
+- **Strong Arms:** Attack speed is increased to 5 (base = 4). (e.g., iron axe: 0.9 base -> 1.35 with perk).
+- **Salvaged Bark:** Gain 2 planks when you strip a log.
+- **Brute:** Swords deal 75% less damage, but Axes can be used for Slaying based on Woodcutting skill.
+
+### Miner (Mining)
+- **Safety Lamp:** night vision when a torch/lantern is equipped in the off-hand.
+- **Blasting Expert:** 20% less damage from explosions (stacks with Blast Protection IV).
+- **Vertigo:** 20% more fall damage.
+
+### Wizard (Magic)
+* **Incantation:** cast spells based on your equipped wand:
+* 1. Stick: grants regeneration to targeted player or self. (20sec cooldown)
+* 2. Blaze Rod: casts a fireball that deals damage to entities, but not blocks. (25sec cooldown)
+* 3. Breeze Rod: toggles levitation, allowing you to move in the air horizontally, but not vertically. (2sec cooldown)
+* **Frail Body:** -10% XP gain to all skills except Magic.
+* **I Put on My Robe and Wizard Hat:** can only wear Leather Armor, Elytra, and Turtle Shell.
+
+### Farmhand (Farming)
+- **Fortitude**: Minimum hunger of 7.
+- **Rustic Temperament**: -30% Magic XP gain.
+
+---
+## Adjusted Cleric Trades
+To make early-game more tolerable with enchantments locked behind Magic levels, Potions play a larger role.
+
+Clerics may now offer: 
+* 1x Blaze Powder for 3x Emeralds
+* 1x Nether Wart for 6x Emeralds
+* 1x Dragon Breath for 8x Emeralds
+
+### You can disable adjusted Cleric trades in config.json !
+
+---
+
+## Installation (server or client)
+Players who wish to play on your server that is running simpleskills can join with a vanilla client.
 
 1. **Download the Mod**
-2. **Install Fabric**:
-   - Make sure you have the **Fabric Loader** installed.
-   - Follow the steps on the [official Fabric website]().
-
-3. **Add the Mod**:
-   - Place the `simpleskills` mod `.jar` file into your Minecraft Fabric server or `.minecraft` `mods` folder.
+2. **Install Fabric API**
+3. **Place the mod** in the `mods` folder (client:`C:\Users\Username\AppData\Roaming\.minecraft\mods`).
 
 ---
 
-## Customization
+## Uninstallation
 
-To customize skill requirements and XP progression in SimpleSkills, follow these steps:
-
-1. **Launch the game or server**: Run the game or server at least once to allow the mod to generate the necessary JSON files.
-2. **Close the game or server**: Exit the game or shutdown the server once the JSON files are generated.
-3. **Locate the JSON files**: You will find the JSON files in the `/mods/simpleskills/` folder.
-4. **Edit the JSON files**: Use a text editor to make changes to the files to customize the mod to your preferences.
-5. **Start the game or server**: After editing the files, restart the game or server for the changes to take effect.
-
-| File Name                               | Purpose                                                               |
-|-----------------------------------------|-----------------------------------------------------------------------|
-| `simpleskills_tool_requirements.json`   | Adjust skill requirements for tools.                                  |
-| `simpleskills_weapon_requirements.json` | Adjust skill requirements for weapons.                                |
-| `simpleskills_armor_requirements.json`  | Adjust skill requirements for armor and Elytra.                       |
-| `simpleskills_magic_requirements.json`  | Adjust skill requirements for magic unlocks (e.g., Mending, Anvil...) |
-| `base_xp.json`                          | Adjust XP multipliers for skills.                                     |
-
-These values are **easy to edit** with a text editor, allowing you to set custom requirements that align perfectly with your server or gameplay preferences.
+1. **Delete `simpleskills.jar` & `simpleskills` folder from `mods`**
+2. **Delete `simpleskills.db` from the world data folder `C:\Users\Username\AppData\Roaming\.minecraft\saves\World_Name\data`**
 
 ---
+
 ## Commands
 
-SimpleSkills provides a set of easy-to-use commands for server admins:
+- `/simpleskills togglehud // toggles the tab menu (MULTIPLAYER) HUD on or off` 
+- For singleplayer the keybind to enable or disable HUD is TAB by default, can be rebound in
+  `Options -> Controls -> Key Binds... -> simpleskills` at the bottom of the menu.
 
-- **Add XP**: `/simpleskills xp add <player> <skill> <amount>`
-- **Set Level**: `/simpleskills level set <player> <skill> <level>`
-- **Query Skills**: `/simpleskills query <player> <skill>`
 
-Commands require a permission level of `/op` or `/level 2`.
+- `/simpleskills ironman enable` // Enables Ironman mode
+
+
+- `/simpleskills reset <username>` // Resets all your skill levels and class
+
+
+- `/simpleskills addxp <target> <skill> <amount>` // Add XP to a player skill _[OP only]_
+
+
+- `/simpleskills setlevel <target> <skill> <amount>` // Sets the level of a player skill _[OP only]_
+
+
+- `/simpleskills getlevel <target> <skill/total>` // Gets the level of a target's skill or total level
+
+#### CLASSES:
+- `/simpleskills class revoke <target>` // Remove the class (also resets primary skill to level 0) _[OP can target other players]_
+- `/simpleskills class set <target> <class>` // Sets a target's class _[OP only]_
+- `/simpleskills class get<target>` // Gets a target's class
+- `/simpleskills class perks <class>` // Lists the perks a class has
+- `/simpleskills class list` // Lists all classes
+- `/simpleskills perkinfo <perkname>` // NOT IMPLEMENTED
 
 ---
 
-## Performance and Uninstalling
-
-### Performance-Friendly:
-SimpleSkills is optimized and **does not utilize server ticks**, ensuring no performance issues even on large servers. For singleplayer use, client ticks are only utilized to update the scoreboard.
-
-### Easy and Clean to Uninstall:
-1. Remove the `.jar` file from your `mods` folder.
-2. Delete the `simpleskills` configuration folder.
-3. Manually check Cleric villager trades, as they do not reset upon uninstall.
+## Performance
+- Lightweight: **No server ticks**.
+- Only the HUD is **client-tick-based in Singleplayer.**
+- Skills saved per world in `saves/<WorldName>/data/simpleskills.db`.
 
 ---
 
-## Technical Overview
+### Customization
 
-- **Fabric API Required**: Lightweight and built specifically for Fabric.
-- **Mixin Architecture**: Smooth integration with Minecraft with minimal performance impact.
-- **SQLite Database**: Ensures efficient skill data storage and retrieval for every player.
+Edit JSON files generated in `/mods/simpleskills/` to:
+- Adjust XP scaling (`base_xp.json`).
+- Customize skill requirements (`tool_requirements.json`, `armor_requirements.json`, etc.).
 
 ---
-#### AI Disclaimer: SimpleSkills has been primarily generated with openai-gpt-4o.
+
+#### AI Disclaimer: simpleskills utilizes code that has been generated with openai-gpt-4o, claude.ai, and mistral.ai.
+#### Disclaimer: simpleskills ("Software") is provided as-is without any warranty. We are not responsible for any data loss or damage. Back up your worlds before using mods. By using this Software, you accept these terms.

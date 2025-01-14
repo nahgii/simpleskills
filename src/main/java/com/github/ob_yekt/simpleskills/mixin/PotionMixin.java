@@ -14,7 +14,7 @@ public class PotionMixin {
     @Inject(method = "onApplied", at = @At("HEAD"))
     private void onEffectApplied(LivingEntity entity, CallbackInfo ci) {
         if (entity instanceof ServerPlayerEntity player && !PotionEffectHandler.isProcessing()) {
-            PotionEffectHandler.handleEffectApplication(player, (StatusEffectInstance)(Object)this);
+            PotionEffectHandler.handleEffectApplication(player, (StatusEffectInstance) (Object) this);
         }
     }
 }

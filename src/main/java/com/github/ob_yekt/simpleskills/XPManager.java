@@ -2,7 +2,16 @@ package com.github.ob_yekt.simpleskills;
 
 import com.github.ob_yekt.simpleskills.data.DatabaseManager;
 
+import com.github.ob_yekt.simpleskills.simpleclasses.ClassMapping;
+import com.github.ob_yekt.simpleskills.simpleclasses.Perk;
+import com.github.ob_yekt.simpleskills.simpleclasses.PerkHandler;
+import com.github.ob_yekt.simpleskills.simpleclasses.PlayerClass;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
 import java.util.function.BiConsumer;
@@ -11,7 +20,7 @@ public class XPManager {
     private static final int MAX_LEVEL = 99; // Adjusted to match RuneScape max level
 
     // XPChangeListener - triggered on XP or level change
-    private static BiConsumer<ServerPlayerEntity, Skills> onXpChangeListener;
+    private static BiConsumer<ServerPlayerEntity, Skills> onXPChangeListener;
 
     // Provide access to MAX_LEVEL
     public static int getMaxLevel() {
@@ -19,58 +28,50 @@ public class XPManager {
     }
 
     // Set an optional listener for XP and level changes
-    public static void setOnXpChangeListener(BiConsumer<ServerPlayerEntity, Skills> listener) {
-        onXpChangeListener = listener;
-
+    public static void setOnXPChangeListener(BiConsumer<ServerPlayerEntity, Skills> listener) {
+        onXPChangeListener = listener;
     }
 
-    /// XP LOGIC
+    /// XP LOGIC with Runescape-style leveling function
     public static int getExperienceForLevel(int level) {
-        if (level == 0) return 0;
+        if (level == 1) return 0; // Level 1 starts with 0 XP
 
-        // Constants for scaling
-        double A = 1566.84; // Scaling factor
-        double B = 0.06626; // Growth rate
-        double C = 0.000949; // Smoothing factor
+        int points = 0;
+        int totalExperience = 0;
+        for (int currentLevel = 1; currentLevel <= level; currentLevel++) {
+            // Runescape formula for calculating points for the level
+            points += (int) Math.floor(currentLevel + 300.0 * Math.pow(2.0, currentLevel / 7.0));
+            if (currentLevel >= level) {
+                return totalExperience; // Return calculated XP
+            }
+            totalExperience = (int) Math.floor((double) points / 4);
+        }
 
-        // Calculate XP using exponential growth with damping
-        return (int) Math.floor(A * ((Math.exp(B * level) - 1) / (1 + C * level)));
+        return 0;
     }
-
 
     // Inverse method to find the level for a given XP amount
     public static int getLevelForExperience(int experience) {
-        int level = 0;
-        while (getExperienceForLevel(level + 1) <= experience) {
+        int level = 1; // Start at level 1
+        while (level < MAX_LEVEL && getExperienceForLevel(level + 1) <= experience) {
             level++;
-            if (level >= MAX_LEVEL) {
-                return MAX_LEVEL; // Prevent levels from exceeding MAX_LEVEL
-            }
         }
         return level;
     }
 
-    // Method to get XP required for the next level
-    public static int getXpToNextLevel(int currentLevel) {
-        if (currentLevel >= MAX_LEVEL) {
-            return Integer.MAX_VALUE; // No more leveling up for max level
-        }
-        return getExperienceForLevel(currentLevel + 1) - getExperienceForLevel(currentLevel);
-    }
-
     // Add XP to a player's skill and notify them
-    public static void addXpWithNotification(ServerPlayerEntity player, Skills skill, int xpToAdd) {
+    public static void addXPWithNotification(ServerPlayerEntity player, Skills skill, int XPToAdd) {
         String playerUuid = player.getUuidAsString();
         DatabaseManager db = DatabaseManager.getInstance();
 
         // Fetch current XP and level from the database
-        int currentXp = 0;
+        int currentXP = 0;
         int currentLevel = 0;
 
         try (var rs = db.getPlayerSkills(playerUuid)) {
             while (rs.next()) {
                 if (rs.getString("skill").equalsIgnoreCase(skill.name())) {
-                    currentXp = rs.getInt("xp");
+                    currentXP = rs.getInt("XP");
                     currentLevel = rs.getInt("level");
                     break;
                 }
@@ -80,40 +81,103 @@ public class XPManager {
             return;
         }
 
+        // Retrieve the player's class and perks
+        String playerClassName = db.getPlayerClass(playerUuid);
+
+        if (playerClassName != null) {
+            try {
+                // Locate the PlayerClass enum for the player's class
+                PlayerClass playerClass = PlayerClass.valueOf(playerClassName.toUpperCase());
+
+                // Check if the skill matches the player's primary skill
+                if (skill.name().equalsIgnoreCase(playerClass.getPrimarySkill())) {
+                    XPToAdd = (int) Math.round(XPToAdd * playerClass.getXPBonusMultiplier()); // Apply the multiplier for primary skills (rounded)
+                }
+            } catch (IllegalArgumentException e) {
+                Simpleskills.LOGGER.warn("Unknown class '{}' for player UUID: {}", playerClassName, playerUuid);
+            }
+        }
+
+        // Apply the perk-based XP modifications
+        for (String perkName : ClassMapping.getPerksForClass(playerClassName)) {
+            Perk perk = PerkHandler.getPerk(perkName);
+            if (perk != null) {
+                XPToAdd = (int) perk.modifyXP(skill, XPToAdd); // Apply the perk's XP modification logic
+            }
+        }
+
         // Add XP and determine the new potential level
-        int newXp = currentXp + xpToAdd;
-        int newLevel = getLevelForExperience(newXp);
+        int newXP = currentXP + XPToAdd;
+        int newLevel = getLevelForExperience(newXP);
 
         // Cap levels at MAX_LEVEL but continue tracking total XP
         newLevel = Math.min(newLevel, MAX_LEVEL);
         boolean leveledUp = newLevel > currentLevel;
 
         // Save the updated XP and level to the database (level doesn't exceed MAX_LEVEL)
-        db.savePlayerSkill(playerUuid, skill.name(), newXp, newLevel);
+        db.savePlayerSkill(playerUuid, skill.name(), newXP, newLevel);
 
         // Send notifications to the player
-        String xpMessage = "[SimpleSkills] You gained " + xpToAdd + " XP in " + skill.getDisplayName() + "!";
-        player.sendMessage(Text.of(xpMessage), true);
+        String XPMessage = "§6[simpleskills]§f You gained " + XPToAdd + " XP in " + skill.getDisplayName() + "!";
+        player.sendMessage(Text.of(XPMessage), true);
 
         if (leveledUp) {
             String levelUpMessage;
-            if (newLevel == MAX_LEVEL) {
-                // Notify player they have reached max level
-                levelUpMessage = "[SimpleSkills] You have reached the maximum level of 99 in " + skill.getDisplayName() + "!";
 
+            var world = player.getWorld(); // Get the player's current world
+            if (world instanceof ServerWorld serverWorld) {
+                if (newLevel == MAX_LEVEL) {
+                    // Special effects for reaching the maximum level
+                    levelUpMessage = "§6[simpleskills]§f You have reached the maximum level of §6" + MAX_LEVEL + "§f in " + skill.getDisplayName() + "!";
+                    player.sendMessage(Text.of(levelUpMessage), false);
 
-            } else {
-                levelUpMessage = "[SimpleSkills] You leveled up in " + skill.getDisplayName() + "! New level: " + newLevel;
+                    // Notify the entire server
+
+                    // Notify the entire server
+                    serverWorld.getPlayers().forEach(onlinePlayer ->
+                            onlinePlayer.sendMessage(Text.of("§6[SimpleSkills]§f " + player.getName().getString() + " has reached level §6" + MAX_LEVEL + "§f in " + skill.getDisplayName() + "!"), false)
+                    );
+
+                    // Play a unique sound for max level
+                    serverWorld.playSound(
+                            null, // Null means all players near the sound will hear it
+                            player.getBlockPos(), // Position
+                            SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, // Special sound for max level
+                            SoundCategory.PLAYERS, // Sound category
+                            0.9f, // Volume
+                            1.2f // Pitch
+                    );
+
+                    // Spawn max-level confetti particles
+                    spawnConfettiParticles(serverWorld, player.getX(), player.getY(), player.getZ(), true);
+
+                } else {
+                    // Regular level-up effects
+                    levelUpMessage = "§6[simpleskills]§f You leveled up in " + skill.getDisplayName() + "! New level: " + newLevel;
+                    player.sendMessage(Text.of(levelUpMessage), false);
+
+                    // Regular level-up sound
+                    serverWorld.playSound(
+                            null, // Null means all players near the sound will hear it
+                            player.getBlockPos(), // Position
+                            SoundEvents.ENTITY_PLAYER_LEVELUP, // Regular level-up sound
+                            SoundCategory.PLAYERS, // Sound category
+                            0.7f, // Volume
+                            1.3f // Pitch
+                    );
+
+                    // Spawn regular level-up confetti particles
+                    spawnConfettiParticles(serverWorld, player.getX(), player.getY(), player.getZ(), false);
+                }
             }
 
-            player.sendMessage(Text.of(levelUpMessage), false);
+            // Log level-up information
             Simpleskills.LOGGER.info("Player {} leveled up in {}! New level: {}", playerUuid, skill.name(), newLevel);
-
         }
 
         // Trigger XPChangeListener if it exists
-        if (onXpChangeListener != null) {
-            onXpChangeListener.accept(player, skill);
+        if (onXPChangeListener != null) {
+            onXPChangeListener.accept(player, skill);
         }
         // Update the tab menu after XP or level change
         SkillTabMenu.updateTabMenu(player);
@@ -134,5 +198,40 @@ public class XPManager {
         }
 
         return 0;
+    }
+
+    private static void spawnConfettiParticles(ServerWorld serverWorld, double x, double y, double z, boolean isMaxLevel) {
+        // Particle types for variety
+        ParticleEffect[] particles = new ParticleEffect[]{
+                ParticleTypes.HAPPY_VILLAGER,
+                ParticleTypes.ENCHANTED_HIT,
+                ParticleTypes.FIREWORK,
+                ParticleTypes.CRIT
+        };
+
+        // Number of particles and spread adjustment
+        int count = isMaxLevel ? 200 : 75;
+        double spread = isMaxLevel ? 2.0 : 1.0;
+
+        for (ParticleEffect particle : particles) {
+            serverWorld.spawnParticles(
+                    particle, // Current particle type
+                    x, y + 1.5, z, // Center position
+                    count / particles.length, // Divide evenly among types
+                    spread, spread, spread, // Spread in X, Y, Z
+                    0.05 // Velocity multiplier
+            );
+        }
+
+        // Extra burst of fireworks for max level
+        if (isMaxLevel) {
+            serverWorld.spawnParticles(
+                    ParticleTypes.FIREWORK,
+                    x, y + 1.5, z,
+                    50, // Extra burst count
+                    1.5, 1.5, 1.5,
+                    0.1
+            );
+        }
     }
 }

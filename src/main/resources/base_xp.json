@@ -1,8 +1,9 @@
 {
-  "WOODCUTTING": 30,
-  "EXCAVATING": 20,
   "MINING": 15,
-  "SLAYING": 10,
-  "DEFENSE": 15,
-  "MAGIC": 10
+  "WOODCUTTING": 25,
+  "EXCAVATING": 10,
+  "FARMING": 30,
+  "SLAYING": 35,
+  "DEFENSE": 40,
+  "MAGIC": 80
 }

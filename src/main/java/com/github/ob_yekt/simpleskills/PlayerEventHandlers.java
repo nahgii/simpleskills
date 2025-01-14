@@ -5,10 +5,14 @@ import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import com.github.ob_yekt.simpleskills.requirements.RequirementLoader;
 import com.github.ob_yekt.simpleskills.requirements.SkillRequirement;
 
+import com.github.ob_yekt.simpleskills.simpleclasses.PerkHandler;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -26,7 +30,7 @@ public class PlayerEventHandlers {
         registerPlayerJoinEvent();
 
         // Register XP-related events
-        registerXpGainEvent();
+        registerXPGainEvent();
 
         // Register block-break events
         registerBlockBreakEvents();
@@ -70,208 +74,244 @@ public class PlayerEventHandlers {
                 Simpleskills.LOGGER.error("Error initializing skills for player {}", player.getName().getString(), e);
             }
 
+            // Assign Peasant as the default class if none is set
+            String playerClass = db.getPlayerClass(playerUuid);
+            if (playerClass == null || playerClass.isEmpty() || playerClass.equalsIgnoreCase("NONE")) {
+                db.setPlayerClass(playerUuid, "PEASANT");
+                Simpleskills.LOGGER.info("Defaulted player {} to 'PEASANT' class.", player.getName().getString());
+            }
+
             // Update the tab menu with the player's skills
             SkillTabMenu.updateTabMenu(player);
         });
     }
 
     private static void registerAttributeUpdateEvent() {
-        XPManager.setOnXpChangeListener((player, skill) -> {
+        XPManager.setOnXPChangeListener((player, skill) -> {
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 AttributeUpdater.updatePlayerAttributes(serverPlayer, skill);
             }
         });
     }
 
-    private static void registerXpGainEvent() {
+    private static void registerXPGainEvent() {
         // Whenever XP is added, refresh the player's tab menu
-        XPManager.setOnXpChangeListener((player, skill) -> {
+        XPManager.setOnXPChangeListener((player, skill) -> {
             SkillTabMenu.updateTabMenu(player); // Update the tab menu after XP gain
 
         });
     }
 
-    /// Block-breaking skills logic:
+    /// Block-breaking skills logic
 
     private static void registerBlockBreakEvents() {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (world.isClient || !(player instanceof ServerPlayerEntity serverPlayer)) {
-                return true; // Allow breaking if not on server or player is not a server player
+                return true;
             }
 
-            String playerUuid = serverPlayer.getUuidAsString();
-            String toolName = serverPlayer.getMainHandStack().getItem().toString();
             String blockTranslationKey = state.getBlock().getTranslationKey();
+            String toolName = serverPlayer.getMainHandStack().getItem().toString();
 
-                // Fetch the tool requirement for the tool being used
-                SkillRequirement requirement = RequirementLoader.getToolRequirement(toolName);
+            // Get the relevant skill for this block
+            Skills relevantSkill = getRelevantSkill(blockTranslationKey);
 
-                if (requirement != null) {
-                    // Identify which skill is required (e.g., Woodcutting, Mining, Excavating)
-                    Skills requiredSkill = Skills.valueOf(requirement.getSkill().toUpperCase());
-                    int playerLevel = getSkillLevel(playerUuid, requiredSkill);
-
-                    // Compare the player's level to the required level
-                    if (playerLevel < requirement.getLevel()) {
-                        serverPlayer.sendMessage(
-                                Text.of("[SimpleSkills] You need " +
-                                        requiredSkill.getDisplayName() + " level " +
-                                        requirement.getLevel() + " to break this block with your tool!"),
-                                true
-                        );
-                        return false; // Deny the block-breaking attempt
-                    }
+            // Only check tool requirements if the block is related to a skill
+            if (relevantSkill != null) {
+                // Special handling for crops - don't require tools
+                if (isCrop(blockTranslationKey)) {
+                    return true;
                 }
 
-            return true; // Allow breaking for blocks without restrictions
+                SkillRequirement requirement = RequirementLoader.getToolRequirement(toolName);
+                if (requirement != null) {
+                    // Make sure the requirement matches the relevant skill
+                    if (requirement.getSkill().equalsIgnoreCase(relevantSkill.name())) {
+                        int playerLevel = getSkillLevel(serverPlayer.getUuidAsString(), relevantSkill);
+                        if (playerLevel < requirement.getLevel()) {
+                            serverPlayer.sendMessage(Text.of("§6[simpleskills]§f You need " + relevantSkill.getDisplayName() + " level " + requirement.getLevel() + " to break this block with your tool!"), true);
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         });
 
-        // Triggered after a block is successfully broken
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (world.isClient || !(player instanceof ServerPlayerEntity serverPlayer)) {
                 return;
             }
 
             String blockTranslationKey = state.getBlock().getTranslationKey();
+            Skills relevantSkill = getRelevantSkill(blockTranslationKey);
 
-            // XP multipliers for ores based on rarity
-            double xpMultiplier = 1.0; // Default multiplier for non-ores (10 XP)
-            boolean isOre = false;
-
-            // Check if the block is an ore and set rarity multipliers
-            if (blockTranslationKey.contains("coal_ore")) {
-                xpMultiplier = 2.0;  // Common but not everywhere like stone, large veins
-                isOre = true;
-            } else if (blockTranslationKey.contains("nether_quartz_ore")) {
-                xpMultiplier = 2.2;  // Common in nether, requires nether access
-                isOre = true;
-            } else if (blockTranslationKey.contains("copper_ore")) {
-                xpMultiplier = 2.5;  // Large veins but less common than coal
-                isOre = true;
-            } else if (blockTranslationKey.contains("iron_ore")) {
-                xpMultiplier = 3.0;  // Essential resource, moderately common
-                isOre = true;
-            } else if (blockTranslationKey.contains("redstone_ore")) {
-                xpMultiplier = 4.0;  // Deep-level only, medium-sized veins
-                isOre = true;
-            } else if (blockTranslationKey.contains("gold_ore")) {
-                xpMultiplier = 5.0;  // Deep-level, rarer than iron, smaller veins
-                isOre = true;
-            } else if (blockTranslationKey.contains("lapis_ore")) {
-                xpMultiplier = 6.0;  // Concentrated at specific heights, important for enchanting
-                isOre = true;
-            } else if (blockTranslationKey.contains("emerald_ore")) {
-                xpMultiplier = 8.0;  // Mountain-only, single blocks rather than veins
-                isOre = true;
-            } else if (blockTranslationKey.contains("diamond_ore")) {
-                xpMultiplier = 10.0; // Deep-level only, smallest veins, most valuable
-                isOre = true;
+            // Skip if no relevant skill is associated with the block
+            if (relevantSkill == null) {
+                return;
             }
 
-            // Check if the player is using a tool with Silk Touch, but only if the block is an ore
-            boolean includesSilkTouch = false;
-            if (isOre) {
-                ItemStack toolStack = serverPlayer.getEquippedStack(EquipmentSlot.MAINHAND); // Get player's tool
-                for (var enchantment : toolStack.getEnchantments().getEnchantments()) {
-                    if (enchantment.getIdAsString().equals("minecraft:silk_touch")) {
-                        includesSilkTouch = true;
-                        break;
+            // Handle farming crops and blocks
+            if (relevantSkill == Skills.FARMING) {
+                // First check for crop-specific XP
+                grantFarmingXP((ServerWorld) world, serverPlayer, state, blockTranslationKey);
+
+                // Check for farming blocks
+                if (isFarmingBlock(blockTranslationKey)) {
+                    // Check for both Silk Touch and Shears
+                    ItemStack mainHandItem = serverPlayer.getMainHandStack();
+                    if (SilkTouchHandler.hasSilkTouch(serverPlayer) || mainHandItem.isOf(Items.SHEARS)) {
+                        return; // No XP for blocks harvested with Silk Touch or Shears
                     }
+
+                    int baseXP = ConfigLoader.getBaseXP(relevantSkill);
+                    int reducedXP = (int) (baseXP * 0.01); // Grant 1% of normal XP
+                    XPManager.addXPWithNotification(serverPlayer, relevantSkill, reducedXP);
+                }
+            }
+            // Handle mining skill XP with ore multipliers
+            else if (relevantSkill == Skills.MINING) {
+                double XPMultiplier = getOreMultiplier(blockTranslationKey);
+                boolean isOre = XPMultiplier > 1.0;
+
+                // Check Silk Touch for ores
+                if (isOre && SilkTouchHandler.hasSilkTouch(serverPlayer)) {
+                    return; // No XP for ores mined with Silk Touch
                 }
 
-                // If Silk Touch is used on an ore, do not grant XP
-                if (includesSilkTouch) {
-                    return;
-                }
+                XPManager.addXPWithNotification(serverPlayer, Skills.MINING, (int) (ConfigLoader.getBaseXP(Skills.MINING) * XPMultiplier));
             }
-            // Grant XP for ores or other blocks
-            if (isOre) {
-                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (int) (ConfigLoader.getBaseXp(Skills.MINING) * xpMultiplier));
-            }
-
-            else if (!blockTranslationKey.contains("button")
-                    && !blockTranslationKey.contains("pressure")
-                    && (blockTranslationKey.contains("stone")
-                    || blockTranslationKey.contains("obsidian")
-                    || blockTranslationKey.contains("netherite")
-                    || blockTranslationKey.contains("debris")
-                    || blockTranslationKey.contains("tuff")
-                    || blockTranslationKey.contains("prismarine")
-                    || blockTranslationKey.contains("purpur")
-                    || blockTranslationKey.contains("amethyst")
-                    || blockTranslationKey.contains("basalt")
-                    || blockTranslationKey.contains("deepslate")
-                    || blockTranslationKey.contains("granite")
-                    || blockTranslationKey.contains("diorite")
-                    || blockTranslationKey.contains("andesite")
-                    || blockTranslationKey.contains("brick")
-                    || blockTranslationKey.contains("blackstone")
-                    || blockTranslationKey.contains("copper")))
-            {
-                XPManager.addXpWithNotification(serverPlayer, Skills.MINING, (ConfigLoader.getBaseXp(Skills.MINING)));
-            }
-            else if (!blockTranslationKey.contains("leaves")
-                    && !blockTranslationKey.contains("enchanting")
-                    && !blockTranslationKey.contains("sign")
-                    && !blockTranslationKey.contains("sapling")
-                    && !blockTranslationKey.contains("fungus")
-                    && !blockTranslationKey.contains("mangrove_roots")
-                    && !blockTranslationKey.contains("propagule")
-                    && !blockTranslationKey.contains("button")
-                    && !blockTranslationKey.contains("pressure")
-                    && !blockTranslationKey.equals("block.minecraft.bamboo")
-                    && !blockTranslationKey.equals("block.minecraft.hanging_roots")
-                    && !blockTranslationKey.equals("block.minecraft.crimson_roots")
-                    && !blockTranslationKey.equals("block.minecraft.warped_roots")
-                    && (blockTranslationKey.contains("log")
-                    || blockTranslationKey.contains("planks")
-                    || blockTranslationKey.contains("bookshelf")
-                    || blockTranslationKey.contains("root")
-                    || blockTranslationKey.contains("door")
-                    || blockTranslationKey.contains("barrel")
-                    || blockTranslationKey.contains("chest")
-                    || blockTranslationKey.contains("lectern")
-                    || blockTranslationKey.contains("loom")
-                    || blockTranslationKey.contains("campfire")
-                    || blockTranslationKey.contains("fence")
-                    || blockTranslationKey.contains("gate")
-                    || blockTranslationKey.contains("wood")
-                    || blockTranslationKey.contains("oak")
-                    || blockTranslationKey.contains("spruce")
-                    || blockTranslationKey.contains("birch")
-                    || blockTranslationKey.contains("jungle")
-                    || blockTranslationKey.contains("acacia")
-                    || blockTranslationKey.contains("dark_oak")
-                    || blockTranslationKey.contains("pale_oak")
-                    || blockTranslationKey.contains("mangrove")
-                    || blockTranslationKey.contains("cherry")
-                    || blockTranslationKey.contains("bamboo")
-                    || blockTranslationKey.contains("crimson")
-                    || blockTranslationKey.contains("warped")))
-            {
-                XPManager.addXpWithNotification(serverPlayer, Skills.WOODCUTTING, (ConfigLoader.getBaseXp(Skills.WOODCUTTING)));
-            }
-            else if (blockTranslationKey.contains("dirt")
-                    || blockTranslationKey.contains("sand")
-                    || blockTranslationKey.contains("gravel")
-                    || blockTranslationKey.contains("clay")
-                    || blockTranslationKey.contains("podzol")
-                    || blockTranslationKey.contains("mycelium")
-                    || blockTranslationKey.contains("farmland")
-                    || blockTranslationKey.contains("concretePowder")
-                    || blockTranslationKey.contains("mud")
-                    || blockTranslationKey.contains("grass_block")
-                    || blockTranslationKey.contains("soil")) {
-                XPManager.addXpWithNotification(serverPlayer, Skills.EXCAVATING, (ConfigLoader.getBaseXp(Skills.EXCAVATING)));
+            // Handle woodcutting and excavating XP
+            else {
+                XPManager.addXPWithNotification(serverPlayer, relevantSkill, ConfigLoader.getBaseXP(relevantSkill));
             }
         });
     }
 
+    // Helper method to determine which skill (if any) a block is related to
+    private static Skills getRelevantSkill(String blockTranslationKey) {
+
+        // Check crops first
+        if (isCrop(blockTranslationKey)) {
+            return Skills.FARMING;
+        }
+        // Then check other farming blocks
+        if (isFarmingBlock(blockTranslationKey)) {
+            return Skills.FARMING;
+        }
+        // Check mining blocks
+        if (isMiningBlock(blockTranslationKey)) {
+            return Skills.MINING;
+        }
+        // Check woodcutting blocks
+        if (isWoodcuttingBlock(blockTranslationKey)) {
+            return Skills.WOODCUTTING;
+        }
+        // Check excavating blocks
+        if (isExcavatingBlock(blockTranslationKey)) {
+            return Skills.EXCAVATING;
+        }
+
+        return null;
+    }
+
+    private static boolean isCrop(String blockTranslationKey) {
+        return blockTranslationKey.contains("wheat") || blockTranslationKey.contains("carrots")
+                || blockTranslationKey.contains("potatoes") || blockTranslationKey.contains("beetroots") || blockTranslationKey.contains("nether_wart")
+                || blockTranslationKey.contains("cocoa") || blockTranslationKey.contains("melon");
+    }
+
+    private static boolean isFarmingBlock(String blockTranslationKey) {
+        return blockTranslationKey.contains("sculk") || blockTranslationKey.contains("wart_block")
+                || blockTranslationKey.contains("leaves") || blockTranslationKey.contains("shroomlight") || blockTranslationKey.contains("sponge")
+                || blockTranslationKey.contains("hay_block") || blockTranslationKey.contains("target") || blockTranslationKey.contains("dried_kelp_block")
+                || blockTranslationKey.contains("moss_block") || blockTranslationKey.contains("moss_carpet");
+    }
+
+    private static boolean isMiningBlock(String blockTranslationKey) {
+        return blockTranslationKey.contains("_ore") || (!blockTranslationKey.contains("button")
+                && !blockTranslationKey.contains("grindstone") && !blockTranslationKey.contains("pressure") &&
+
+                (blockTranslationKey.contains("stone") || blockTranslationKey.contains("obsidian")
+                        || blockTranslationKey.contains("netherite") || blockTranslationKey.contains("debris") || blockTranslationKey.contains("tuff")
+                        || blockTranslationKey.contains("prismarine") || blockTranslationKey.contains("purpur") || blockTranslationKey.contains("amethyst")
+                        || blockTranslationKey.contains("basalt") || blockTranslationKey.contains("deepslate") || blockTranslationKey.contains("granite")
+                        || blockTranslationKey.contains("diorite") || blockTranslationKey.contains("andesite") || blockTranslationKey.contains("brick")
+                        || blockTranslationKey.contains("blackstone") || blockTranslationKey.contains("copper")));
+    }
+
+    private static boolean isWoodcuttingBlock(String blockTranslationKey) {
+        return !blockTranslationKey.contains("leaves") && !blockTranslationKey.contains("enchanting")
+                && !blockTranslationKey.contains("sign") && !blockTranslationKey.contains("sapling") && !blockTranslationKey.contains("fungus")
+                && !blockTranslationKey.contains("mangrove_roots") && !blockTranslationKey.contains("propagule") && !blockTranslationKey.contains("button")
+                && !blockTranslationKey.contains("pressure") && !blockTranslationKey.equals("block.minecraft.bamboo")
+                && !blockTranslationKey.equals("block.minecraft.hanging_roots") && !blockTranslationKey.equals("block.minecraft.crimson_roots")
+                && !blockTranslationKey.equals("block.minecraft.warped_roots") &&
+
+                (blockTranslationKey.contains("log") || blockTranslationKey.contains("planks")
+                        || blockTranslationKey.contains("fence") || blockTranslationKey.contains("gate") || blockTranslationKey.contains("wood")
+                        || blockTranslationKey.contains("oak") || blockTranslationKey.contains("spruce") || blockTranslationKey.contains("birch")
+                        || blockTranslationKey.contains("jungle") || blockTranslationKey.contains("acacia") || blockTranslationKey.contains("dark_oak")
+                        || blockTranslationKey.contains("pale_oak") || blockTranslationKey.contains("mangrove") || blockTranslationKey.contains("cherry")
+                        || blockTranslationKey.contains("bamboo") || blockTranslationKey.contains("crimson") || blockTranslationKey.contains("warped"));
+    }
+
+    private static boolean isExcavatingBlock(String blockTranslationKey) {
+        return blockTranslationKey.contains("dirt") || blockTranslationKey.contains("sand")
+                || blockTranslationKey.contains("gravel") || blockTranslationKey.contains("clay") || blockTranslationKey.contains("podzol")
+                || blockTranslationKey.contains("mycelium") || blockTranslationKey.contains("farmland") || blockTranslationKey.contains("concretePowder")
+                || blockTranslationKey.contains("mud") || blockTranslationKey.contains("grass_block") || blockTranslationKey.contains("soil");
+    }
+
+    private static double getOreMultiplier(String blockTranslationKey) {
+        if (blockTranslationKey.contains("nether_quartz_ore")) return 1.5;
+        if (blockTranslationKey.contains("coal_ore")) return 2.0;
+        if (blockTranslationKey.contains("copper_ore")) return 2.5;
+        if (blockTranslationKey.contains("iron_ore")) return 3.0;
+        if (blockTranslationKey.contains("redstone_ore")) return 4.0;
+        if (blockTranslationKey.contains("gold_ore")) return 5.0;
+        if (blockTranslationKey.contains("lapis_ore")) return 5.5;
+        if (blockTranslationKey.contains("emerald_ore")) return 8.0;
+        if (blockTranslationKey.contains("diamond_ore")) return 10.0;
+        return 1.0; // Default multiplier for non-ores
+    }
+
+    ///  Farming Crop XP system
+
+    private static void grantFarmingXP(ServerWorld world, ServerPlayerEntity serverPlayer, BlockState state, String blockTranslationKey) {
+        // Handle fully grown crops with growth stages
+        if (state.contains(Properties.AGE_7)) {
+            int age = state.get(Properties.AGE_7);
+            // Full XP for mature crops
+            if (age == 7 && (blockTranslationKey.contains("wheat") || blockTranslationKey.contains("carrots") || blockTranslationKey.contains("potatoes"))) {
+                XPManager.addXPWithNotification(serverPlayer, Skills.FARMING, ConfigLoader.getBaseXP(Skills.FARMING));
+            }
+        } else if (state.contains(Properties.AGE_3)) {
+            int age = state.get(Properties.AGE_3);
+            // Handle mature beetroots and nether wart
+            if (age == 3 && (blockTranslationKey.contains("beetroots") || blockTranslationKey.contains("nether_wart"))) {
+                XPManager.addXPWithNotification(serverPlayer, Skills.FARMING, ConfigLoader.getBaseXP(Skills.FARMING));
+            }
+        } else if (state.contains(Properties.AGE_2)) {
+            int age = state.get(Properties.AGE_2);
+            // Handle mature cocoa pods
+            if (age == 2 && blockTranslationKey.contains("cocoa")) {
+                XPManager.addXPWithNotification(serverPlayer, Skills.FARMING, ConfigLoader.getBaseXP(Skills.FARMING));
+            }
+        }
+
+        // Handle special crops that don't use age properties
+        if (blockTranslationKey.contains("melon") || blockTranslationKey.contains("pumpkin")) {
+            if (!SilkTouchHandler.hasSilkTouch(serverPlayer)) {
+                XPManager.addXPWithNotification(serverPlayer, Skills.FARMING, ConfigLoader.getBaseXP(Skills.FARMING));
+            }
+        }
+    }
 
     /// Defense XP system
 
     private static void registerDefenseEvents() {
-        // Listen for living entity damage and filter only players
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof net.minecraft.server.network.ServerPlayerEntity player) {
                 handleDefenseXP(player, damageSource, damageAmount);
@@ -280,9 +320,8 @@ public class PlayerEventHandlers {
         });
     }
 
-    // Handles granting XP for defense based on damage taken
     private static void handleDefenseXP(ServerPlayerEntity player, DamageSource source, float damageAmount) {
-        final float MIN_DAMAGE_THRESHOLD = 1.0F; // Ignore insignificant damage
+        final float MIN_DAMAGE_THRESHOLD = 2.0F; // Ignore insignificant damage
         if (damageAmount < MIN_DAMAGE_THRESHOLD) return;
 
         // Prevent XP gain for invalid damage sources
@@ -291,9 +330,9 @@ public class PlayerEventHandlers {
         // If the player is blocking with a shield, grant shield block XP
         if (isShieldBlocking(player)) {
             if (!isInvalidShieldBlockingSource(source)) {
-                float shieldXpMultiplier = 0.5f;
-                int xpGained = Math.round(damageAmount * (ConfigLoader.getBaseXp(Skills.DEFENSE)) * shieldXpMultiplier);
-                XPManager.addXpWithNotification(player, Skills.DEFENSE, xpGained); // Add Shield Defense XP
+                float shieldXPMultiplier = 0.3f; // Shields only grant 30% XP
+                int XPGained = Math.round(damageAmount * (ConfigLoader.getBaseXP(Skills.DEFENSE)) * shieldXPMultiplier);
+                XPManager.addXPWithNotification(player, Skills.DEFENSE, XPGained); // Add Shield Defense XP
             }
             return; // Shield block XP granted, no further Defense XP
         }
@@ -306,78 +345,139 @@ public class PlayerEventHandlers {
             }
         }
 
-        // Grant Defense XP if the player has any armor equipped
-        if (armorCount > 0) {
-            float armorMultiplier = 1.0f + (0.25f * armorCount); // Bonus scaling for more armor
-            int xpGained = Math.round(damageAmount * (ConfigLoader.getBaseXp(Skills.DEFENSE)) * armorMultiplier);
+        // Calculate the XP multiplier based on the number of armor pieces equipped
+        float armorMultiplier = 0.25f * armorCount; // Each armor piece adds 0.25 to the multiplier
 
-            // Add Defense XP using the centralized method
-            XPManager.addXpWithNotification(player, Skills.DEFENSE, xpGained);
+        // Grant Defense XP if the player has any armor equipped
+        if (armorMultiplier > 0) {
+            int XPGained = Math.round(damageAmount * ConfigLoader.getBaseXP(Skills.DEFENSE) * armorMultiplier);
+            XPManager.addXPWithNotification(player, Skills.DEFENSE, XPGained);
         }
     }
 
-    // Checks if the player is actively blocking with a shield
     private static boolean isShieldBlocking(ServerPlayerEntity player) {
         return player.isBlocking() && player.getActiveItem().getItem() == Items.SHIELD;
     }
 
-    // Validates whether the damage source allows granting XP
     private static boolean isInvalidDamageSource(DamageSource source) {
+        // Check for explosion damage types
+        if (source.isOf(net.minecraft.entity.damage.DamageTypes.EXPLOSION) || source.isOf(net.minecraft.entity.damage.DamageTypes.PLAYER_EXPLOSION)) {
+            return true;
+        }
+
         // Allow XP only for damage caused by entities or projectiles
-        return !(source.getSource() instanceof net.minecraft.entity.Entity
-                || source.getSource() instanceof net.minecraft.entity.projectile.ProjectileEntity);
+        return !(source.getSource() instanceof net.minecraft.entity.Entity || source.getSource() instanceof net.minecraft.entity.projectile.ProjectileEntity);
     }
 
-    // Validates whether the shield blocking damage source allows granting XP
     private static boolean isInvalidShieldBlockingSource(DamageSource source) {
+        // Check for explosion damage types
+        if (source.isOf(net.minecraft.entity.damage.DamageTypes.EXPLOSION) || source.isOf(net.minecraft.entity.damage.DamageTypes.PLAYER_EXPLOSION)) {
+            return true;
+        }
+
         // Allow XP only for blocking damage caused by entities or projectiles
-        return !(source.getSource() instanceof net.minecraft.entity.Entity
-                || source.getSource() instanceof net.minecraft.entity.projectile.ProjectileEntity);
+        return !(source.getSource() instanceof net.minecraft.entity.Entity || source.getSource() instanceof net.minecraft.entity.projectile.ProjectileEntity);
     }
 
     /// Slaying restrictions and XP system using the centralized method:
 
-    private static final float MIN_DAMAGE_THRESHOLD = 2.0F; // Minimum damage to grant XP
+    private static final float MIN_DAMAGE_THRESHOLD = 4.0F; // Minimum damage to grant XP
 
     private static void registerSlayingEvents() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((target, damageSource, damageAmount) -> {
             if (damageSource.getAttacker() instanceof net.minecraft.server.network.ServerPlayerEntity attacker) {
-                ItemStack weapon = attacker.getMainHandStack();
+                // Get the weapon/item from the player's main hand
+                ItemStack itemStack = attacker.getMainHandStack();
 
-                if (weapon.isEmpty()) return true; // Allow attacks without granting XP for no weapon
+                if (itemStack.isEmpty()) return true; // Allow attacks without granting XP for empty hands
 
-                // Fetch the weapon's identifier
-                String weaponName = Registries.ITEM.getId(weapon.getItem()).toString();
-                SkillRequirement requirement = RequirementLoader.getWeaponRequirement(weaponName);
+                // Get the item's registry name
+                String itemName = Registries.ITEM.getId(itemStack.getItem()).toString();
 
-                // Check if the player meets the required level for the weapon
-                if (requirement != null && "Slaying".equalsIgnoreCase(requirement.getSkill())) {
-                    int requiredLevel = requirement.getLevel();
-                    int playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.SLAYING);
+                // Check if the item is a sword
+                boolean isSword = PerkHandler.isSword(itemStack.getItem());
 
-                    if (playerLevel < requiredLevel) {
-                        attacker.sendMessage(
-                                Text.of("[SimpleSkills] You need Slaying level " + requiredLevel + " to use this weapon!"),
-                                true
-                        );
-                        return false; // Block the attack due to unmet level requirements
+                // Check if the item is an axe
+                boolean isAxe = PerkHandler.isAxe(itemStack.getItem());
+
+                // Lookup the weapon's requirements dynamically
+                SkillRequirement weaponRequirement = RequirementLoader.getWeaponRequirement(itemName);
+
+                if (weaponRequirement != null && "Slaying".equalsIgnoreCase(weaponRequirement.getSkill())) {
+                    int requiredLevel = weaponRequirement.getLevel();
+                    int playerLevel;
+
+                    // Handle custom behavior for "Brute" perk holders
+                    if (PerkHandler.doesPlayerHavePerk(attacker, "Brute")) {
+
+                        // Use Woodcutting level to meet requirements for axes
+                        if (isAxe) {
+                            playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.WOODCUTTING);
+
+                            if (playerLevel < requiredLevel) {
+                                attacker.sendMessage(Text.of("§6[simpleskills]§f You need Woodcutting level " + requiredLevel + " to use this axe!"), true);
+                                return false; // Block the attack due to insufficient Woodcutting level
+                            }
+                        } else {
+                            // Non-axes fallback to normal Slaying level
+                            playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.SLAYING);
+
+                            if (playerLevel < requiredLevel) {
+                                attacker.sendMessage(Text.of("§6[simpleskills]§f You need Slaying level " + requiredLevel + " to use this weapon!"), true);
+                                return false; // Block the attack due to insufficient Slaying level
+                            }
+                        }
+                    } else {
+                        // Non-Brute players always use Slaying level for weapon checks
+                        playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.SLAYING);
+
+                        if (playerLevel < requiredLevel) {
+                            attacker.sendMessage(Text.of("§6[simpleskills]§f You need Slaying level " + requiredLevel + " to use this weapon!"), true);
+                            return false; // Block the attack due to insufficient Slaying level
+                        }
                     }
                 }
 
-                // Now check if the damage is above the threshold (AFTER the weapon requirement is verified)
+                // Check if the damage is above the minimum threshold
                 if (damageAmount < MIN_DAMAGE_THRESHOLD) return true;
 
-                // Grant Slaying XP if the target is NOT an Armor Stand
+                // Grant XP for Slaying after the attack
                 if (!(target instanceof net.minecraft.entity.decoration.ArmorStandEntity)) {
-                    int xpGained = Math.round(damageAmount*(ConfigLoader.getBaseXp(Skills.SLAYING))); // XP per damage point
-                    XPManager.addXpWithNotification(attacker, Skills.SLAYING, xpGained); // Grant Slaying XP
+                    // Scale XP by the damage dealt and add a base XP value
+                    int XPGained = Math.round(damageAmount / 2 + ConfigLoader.getBaseXP(Skills.SLAYING)); // XP based on damage and base XP
+
+                    // Add the XP to the player
+                    XPManager.addXPWithNotification(attacker, Skills.SLAYING, XPGained);
                 }
+
             }
 
-            return true; // Allow the damage to proceed
+            return true; // Allow the attack to proceed
         });
     }
 
+    public static boolean isWeaponAllowed(ServerPlayerEntity attacker) {
+        ItemStack weapon = attacker.getMainHandStack();
+
+        // Allow attacks without a weapon (hand-to-hand combat)
+        if (weapon.isEmpty()) return true;
+
+
+        // Validate skill requirements for weapon
+        String weaponName = Registries.ITEM.getId(weapon.getItem()).toString();
+        SkillRequirement requirement = RequirementLoader.getWeaponRequirement(weaponName);
+        if (requirement != null && "Slaying".equalsIgnoreCase(requirement.getSkill())) {
+            int requiredLevel = requirement.getLevel();
+            int playerLevel = getSkillLevel(attacker.getUuidAsString(), Skills.SLAYING);
+
+            if (playerLevel < requiredLevel) {
+                attacker.sendMessage(Text.of("§6[simpleskills]§f You need Slaying level " + requiredLevel + " to use this weapon!"), true);
+                return false; // Block usage
+            }
+        }
+
+        return true; // Allow weapon if all conditions pass
+    }
 
     /// Query the SQL database for a player's skill level
 

@@ -1,73 +1,170 @@
 package com.github.ob_yekt.simpleskills;
 
 import com.github.ob_yekt.simpleskills.data.DatabaseManager;
-
+import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.server.command.ServerCommandSource;
+
+import java.util.*;
 
 public class SkillTabMenu {
+    private static final List<String> DEFAULT_SKILL_ORDER = List.of(
+            "SLAYING", "DEFENSE", "MINING", "WOODCUTTING", "EXCAVATING", "FARMING", "MAGIC"
+    );
+    public static boolean isTabMenuVisible = true;
+
+    public static void toggleTabMenuVisibility(ServerCommandSource source) {
+        isTabMenuVisible = !isTabMenuVisible;
+
+        ServerPlayerEntity player = source.getPlayer();
+        if (player != null) {
+            if (isTabMenuVisible) {
+                // Trigger an immediate tab menu update
+                updateTabMenu(player);
+            } else {
+                // Clear the tab menu by sending an empty packet
+                player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket(
+                        Text.of(""), // Empty header
+                        Text.of("")  // Empty footer
+                ));
+            }
+        }
+    }
+
     public static void updateTabMenu(ServerPlayerEntity player) {
+        if (!isTabMenuVisible) return;
+
         DatabaseManager db = DatabaseManager.getInstance();
-
-        // Header
         StringBuilder skillInfo = new StringBuilder();
-        skillInfo.append("§6§m=======================================\n"); // Gold bar
-        skillInfo.append("§c§l⚔ Skills Overview ⚔§r\n"); // Red + bold with special symbols
-        skillInfo.append("§6§m=======================================\n");
 
-        int totalLevels = 0; // To store the sum of all skill levels
+        try {
+            // Header
+            skillInfo.append("§6§m=======================================\n")
+                    .append("§c§l⚔ Skills Overview ⚔§r\n")
+                    .append("§6§m=======================================\n\n");
 
-        try (var rs = db.getPlayerSkills(player.getUuidAsString())) {
-            while (rs.next()) {
-                // Retrieve skill information
-                String skillName = rs.getString("skill");
-                int currentLevel = rs.getInt("level");
-                int currentXp = rs.getInt("xp");
+            // Player Class Section - Only if classes are enabled
+            if (ConfigLoader.isFeatureEnabled("classes")) {
+                String playerClass;
+                try {
+                    playerClass = db.getPlayerClass(player.getUuidAsString());
+                } catch (Exception e) {
+                    playerClass = "Unknown";
+                    Simpleskills.LOGGER.error("Failed to fetch player class: {}", e.getMessage());
+                }
+                skillInfo.append(String.format("§6⚔ Class: §a%s §6⚔\n\n",
+                        playerClass != null ? playerClass : "Peasant"));
+            } else {
+                Simpleskills.LOGGER.debug("Classes are disabled by configuration. Skipping class display in tab menu.");
+            }
 
-                totalLevels += currentLevel; // Add current level to total
+            // Ironman Mode Check
+            boolean isIronman = db.isPlayerInIronmanMode(player.getUuidAsString());
+            if (isIronman) {
+                skillInfo.append("§cIronman Mode: §aENABLED\n\n");
+            }
 
-                if (currentLevel == XPManager.getMaxLevel()) {
-                    // Special formatting for max-level skills
-                    String formattedSkillInfo = String.format(
-                            "§6⭐ §e%-15s §e§l%-10s §r§bXP: %10d",
-                            skillName, "Level 99", currentXp
-                    );
-                    skillInfo.append("§8---------------------------------------\n");
-                    skillInfo.append(formattedSkillInfo).append("\n");
-                } else {
-                    // Calculate total XP requirement for next level
-                    int xpForCurrentLevel = XPManager.getExperienceForLevel(currentLevel);
-                    int xpToNextLevel = XPManager.getExperienceForLevel(currentLevel + 1) - xpForCurrentLevel;
-                    int progressToNextLevel = currentXp - xpForCurrentLevel;
+            // Skills Section
+            Map<String, SkillData> skills = new HashMap<>();
+            int totalLevels = 0;
 
-                    // Standard skill row formatting without progress bar
-                    String formattedSkillInfo = String.format(
-                            "§a%-15s §6Level %-7d §6XP: §e%7d §6/ §e%7d",
-                            skillName,                // Skill name, left-aligned to 15 characters
-                            currentLevel,             // Level, left-aligned to 7 characters
-                            progressToNextLevel,      // XP progress, right-aligned to 7 characters
-                            xpToNextLevel             // XP to next level, right-aligned to 7 characters
-                    );
-                    skillInfo.append("§8---------------------------------------\n");
-                    skillInfo.append(formattedSkillInfo).append("\n");
+            // Fetch all skills
+            try (var rs = db.getPlayerSkills(player.getUuidAsString())) {
+                if (rs != null) {
+
+                    while (rs.next()) {
+                        String skillName = rs.getString("skill");
+                        int currentLevel = rs.getInt("level");
+                        int currentXP = rs.getInt("XP");
+
+                        if (skillName == null || skillName.equalsIgnoreCase("NONE")) {
+                            continue;
+                        }
+
+                        // Create the SkillData and add to map
+                        SkillData skillData = new SkillData(skillName, currentLevel, currentXP);
+                        skills.put(skillName, skillData);
+                        totalLevels += currentLevel;
+                    }
                 }
             }
+
+            // Add skills in order with validation
+            skillInfo.append("§8§m---------------------------------------\n\n");
+            for (String skillName : DEFAULT_SKILL_ORDER) {
+                SkillData skill = skills.get(skillName);
+                if (skill != null) {
+                    appendSkillInfo(skillInfo, skill);
+                } else {
+                    Simpleskills.LOGGER.debug("Skill {} not found for player {}", skillName, player.getName().getString());
+                }
+            }
+
+            // Total Level Section
+            skillInfo.append("\n§8§m---------------------------------------\n")
+                    .append(String.format("§b§lTotal Level: §a%d\n", totalLevels))
+                    .append("§6§m=======================================");
+
+            // Send the tab menu to the player
+            player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket(
+                    Text.of(skillInfo.toString()),
+                    Text.of("")
+            ));
+
         } catch (Exception e) {
-            Simpleskills.LOGGER.error("Failed to fetch skill data for player {}", player.getUuidAsString(), e);
-            skillInfo.append("§4§lError: §cUnable to load skill data.\n"); // Error message formatting
+            Simpleskills.LOGGER.error("Failed to update tab menu for player {}", player.getName().getString(), e);
+            player.sendMessage(Text.of("§cError: Failed to load skill data."));
         }
+    }
 
-        // Add the Total Levels section after listing individual skills
-        skillInfo.append("§8---------------------------------------\n");
-        skillInfo.append(String.format("§b§lTotal Level: §a%d\n", totalLevels)); // Bold + blue styling for "Total Levels"
+    private static void appendSkillInfo(StringBuilder skillInfo, SkillData skill) {
+        if (skill.currentLevel == XPManager.getMaxLevel()) {
+            // Max level formatting
+            skillInfo.append(String.format("§6⭐ §e%-12s §eLevel 99 §r§bXP: %,d\n",
+                    skill.name,
+                    skill.currentXP
+            ));
+        } else {
+            // Calculate progress
+            int XPForCurrentLevel = XPManager.getExperienceForLevel(skill.currentLevel);
+            int XPToNextLevel = XPManager.getExperienceForLevel(skill.currentLevel + 1) - XPForCurrentLevel;
+            int progressToNextLevel = skill.currentXP - XPForCurrentLevel;
 
-        // Footer styling
-        skillInfo.append("§6§m=======================================\n");
+            // Create progress bar
+            String progressBar = createProgressBar(progressToNextLevel, XPToNextLevel);
 
-        // Send the styled skill list to the player
-        player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket(
-                Text.of(skillInfo.toString()), // Header
-                Text.of("") // No footer
-        ));
+            // Format skill info with progress bar
+            skillInfo.append(String.format("§a%-12s §fLevel §b%-2d %s §7[§f%,d§7/§f%,d§7]\n",
+                    skill.name,
+                    skill.currentLevel,
+                    progressBar,
+                    progressToNextLevel,
+                    XPToNextLevel
+            ));
+        }
+    }
+
+    private static String createProgressBar(int progress, int total) {
+        int barLength = 10;
+        if (total <= 0) total = 1;
+        progress = Math.max(0, Math.min(progress, total));
+
+        int filled = (int) ((double) progress / total * barLength);
+        int empty = barLength - filled;
+
+        return "§a" + "█".repeat(filled) + "§7" + "░".repeat(empty);
+    }
+
+    private static class SkillData {
+        String name;
+        int currentLevel;
+        int currentXP;
+
+        SkillData(String name, int level, int XP) {
+            this.name = name;
+            this.currentLevel = level;
+            this.currentXP = XP;
+        }
     }
 }

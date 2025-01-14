@@ -6,6 +6,7 @@ public enum Skills {
     EXCAVATING("Excavating"),
     DEFENSE("Defense"),
     SLAYING("Slaying"),
+    FARMING("Farming"),
     MAGIC("Magic");
 
     private final String displayName;

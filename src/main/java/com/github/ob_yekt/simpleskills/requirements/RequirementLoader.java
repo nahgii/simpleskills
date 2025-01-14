@@ -1,8 +1,8 @@
 package com.github.ob_yekt.simpleskills.requirements;
 
 import com.github.ob_yekt.simpleskills.Simpleskills;
-
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class RequirementLoader {
     private static final Path BASE_PATH = Paths.get(System.getProperty("user.dir"), "mods", "simpleskills");
@@ -23,20 +24,19 @@ public class RequirementLoader {
 
     // Load all JSON configuration files
     public static void loadRequirements() {
-
         // Ensure that the "config/simpleskills" folder exists
         if (!Files.exists(BASE_PATH)) {
             try {
                 Files.createDirectories(BASE_PATH);
             } catch (IOException e) {
-                Simpleskills.LOGGER.error("[SimpleSkills] Failed to create directory: {}", BASE_PATH, e);
+                Simpleskills.LOGGER.error("[simpleskills] Failed to create directory: {}", BASE_PATH, e);
             }
         }
 
         toolRequirements = loadOrGenerateDefaults("tool_requirements.json", getDefaultToolRequirements());
         armorRequirements = loadOrGenerateDefaults("armor_requirements.json", getDefaultArmorRequirements());
         weaponRequirements = loadOrGenerateDefaults("weapon_requirements.json", getDefaultWeaponRequirements());
-        magicRequirements = loadOrGenerateDefaults("magic_requirements.json", getDefaultMagicRequirements());
+        magicRequirements = loadOrGenerateDefaults("magic_requirements.json", getDefaultMAGICRequirements());
     }
 
     // Load a JSON file or create it with default values if missing
@@ -51,39 +51,18 @@ public class RequirementLoader {
 
             // Read and parse the file into a map
             Gson gson = new Gson();
-            Type type = new TypeToken<Map<String, SkillRequirement>>() {
-            }.getType();
+            Type type = new TypeToken<Map<String, SkillRequirement>>() {}.getType();
             try (Reader reader = new FileReader(filePath.toFile())) {
-                return gson.fromJson(reader, type);
+                String jsonContent = new BufferedReader(reader).lines().collect(Collectors.joining(System.lineSeparator()));
+                return gson.fromJson(jsonContent, type);
+            } catch (JsonSyntaxException e) {
+                Simpleskills.LOGGER.error("[simpleskills] JSON syntax error in '{}': {}", fileName, e.getMessage());
             }
 
         } catch (Exception e) {
-            Simpleskills.LOGGER.error("[SimpleSkills] Error processing file '{}': {}", fileName, e.getMessage(), e);
+            Simpleskills.LOGGER.error("[simpleskills] Error processing file '{}': {}", fileName, e.getMessage(), e);
         }
         return Collections.emptyMap(); // Return an empty map if an error occurs
-    }
-
-    // Load XP restrictions from magic_xp_restrictions.json
-    private static Map<Integer, Integer> loadOrGenerateXPRestrictions(String fileName, String defaultContent) {
-        try {
-            Path filePath = BASE_PATH.resolve(fileName);
-
-            // If the file doesn't exist, create it with default content
-            if (!Files.exists(filePath)) {
-                createDefaultFile(filePath, defaultContent);
-            }
-
-            // Read and parse the JSON file into a map
-            Gson gson = new Gson();
-            Type type = new TypeToken<Map<Integer, Integer>>() {}.getType();
-            try (Reader reader = new FileReader(filePath.toFile())) {
-                return gson.fromJson(reader, type);
-            }
-
-        } catch (Exception e) {
-            Simpleskills.LOGGER.error("[SimpleSkills] Error processing file '{}': {}", fileName, e.getMessage(), e);
-        }
-        return Collections.emptyMap(); // Use an empty map as fallback
     }
 
     // Create a JSON file with default content
@@ -92,34 +71,41 @@ public class RequirementLoader {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
             writer.write(defaultContent); // Write the default content
         }
-        Simpleskills.LOGGER.info("[SimpleSkills] Created default file: {}", filePath.toAbsolutePath());
+        Simpleskills.LOGGER.info("[simpleskills] Created default file: {}", filePath.toAbsolutePath());
     }
 
     // Provide default JSON content for tools
     private static String getDefaultToolRequirements() {
         return """
-                {
-                "minecraft:wooden_pickaxe": {"skill": "Mining", "level": 0},
-                "minecraft:stone_pickaxe": {"skill": "Mining", "level": 10},
-                "minecraft:golden_pickaxe": {"skill": "Mining", "level": 15},
-                "minecraft:iron_pickaxe": {"skill": "Mining", "level": 20},
-                "minecraft:diamond_pickaxe": {"skill": "Mining", "level": 45},
-                "minecraft:netherite_pickaxe": {"skill": "Mining", "level": 65},
-                
-                "minecraft:wooden_axe": {"skill": "Woodcutting", "level": 0},
-                "minecraft:stone_axe": {"skill": "Woodcutting", "level": 10},
-                "minecraft:golden_axe": {"skill": "Woodcutting", "level": 15},
-                "minecraft:iron_axe": {"skill": "Woodcutting", "level": 20},
-                "minecraft:diamond_axe": {"skill": "Woodcutting", "level": 45},
-                "minecraft:netherite_axe": {"skill": "Woodcutting", "level": 65},
-                
-                "minecraft:wooden_shovel": {"skill": "Excavating", "level": 0},
-                "minecraft:stone_shovel": {"skill": "Excavating", "level": 10},
-                "minecraft:golden_shovel": {"skill": "Excavating", "level": 15},
-                "minecraft:iron_shovel": {"skill": "Excavating", "level": 20},
-                "minecraft:diamond_shovel": {"skill": "Excavating", "level": 45},
-                "minecraft:netherite_shovel": {"skill": "Excavating", "level": 65}
-                }
+{
+  "minecraft:wooden_pickaxe": {"skill": "MINING", "level": 0},
+  "minecraft:stone_pickaxe": {"skill": "MINING", "level": 10},
+  "minecraft:golden_pickaxe": {"skill": "MINING", "level": 15},
+  "minecraft:iron_pickaxe": {"skill": "MINING", "level": 30},
+  "minecraft:diamond_pickaxe": {"skill": "MINING", "level": 60},
+  "minecraft:netherite_pickaxe": {"skill": "MINING", "level": 75},
+
+  "minecraft:wooden_axe": {"skill": "WOODCUTTING", "level": 0},
+  "minecraft:stone_axe": {"skill": "WOODCUTTING", "level": 10},
+  "minecraft:golden_axe": {"skill": "WOODCUTTING", "level": 15},
+  "minecraft:iron_axe": {"skill": "WOODCUTTING", "level": 30},
+  "minecraft:diamond_axe": {"skill": "WOODCUTTING", "level": 60},
+  "minecraft:netherite_axe": {"skill": "WOODCUTTING", "level": 75},
+
+  "minecraft:wooden_shovel": {"skill": "EXCAVATING", "level": 0},
+  "minecraft:stone_shovel": {"skill": "EXCAVATING", "level": 10},
+  "minecraft:golden_shovel": {"skill": "EXCAVATING", "level": 15},
+  "minecraft:iron_shovel": {"skill": "EXCAVATING", "level": 30},
+  "minecraft:diamond_shovel": {"skill": "EXCAVATING", "level": 60},
+  "minecraft:netherite_shovel": {"skill": "EXCAVATING", "level": 75},
+
+  "minecraft:wooden_hoe": {"skill": "FARMING", "level": 0},
+  "minecraft:stone_hoe": {"skill": "FARMING", "level": 10},
+  "minecraft:golden_hoe": {"skill": "FARMING", "level": 15},
+  "minecraft:iron_hoe": {"skill": "FARMING", "level": 30},
+  "minecraft:diamond_hoe": {"skill": "FARMING", "level": 60},
+  "minecraft:netherite_hoe": {"skill": "FARMING", "level": 75}
+}
                 """;
     }
 
@@ -127,38 +113,39 @@ public class RequirementLoader {
     private static String getDefaultArmorRequirements() {
         return """
                 {
-                "minecraft:leather_helmet": { "skill": "Defense", "level": 0 },
-                "minecraft:leather_chestplate": { "skill": "Defense", "level": 0 },
-                "minecraft:leather_leggings": { "skill": "Defense", "level": 0 },
-                "minecraft:leather_boots": { "skill": "Defense", "level": 0 },
-                
-                "minecraft:golden_helmet": { "skill": "Defense", "level": 10 },
-                "minecraft:golden_chestplate": { "skill": "Defense", "level": 10 },
-                "minecraft:golden_leggings": { "skill": "Defense", "level": 10 },
-                "minecraft:golden_boots": { "skill": "Defense", "level": 10 },
-                
-                "minecraft:chainmail_helmet": { "skill": "Defense", "level": 13 },
-                "minecraft:chainmail_chestplate": { "skill": "Defense", "level": 13 },
-                "minecraft:chainmail_leggings": { "skill": "Defense", "level": 13 },
-                "minecraft:chainmail_boots": { "skill": "Defense", "level": 13 },
-                
-                "minecraft:turtle_helmet": { "skill": "Defense", "level": 15 },
-                "minecraft:elytra": { "skill": "Magic", "level": 65 },
-                
-                "minecraft:iron_helmet": { "skill": "Defense", "level": 25 },
-                "minecraft:iron_chestplate": { "skill": "Defense", "level": 25 },
-                "minecraft:iron_leggings": { "skill": "Defense", "level": 25 },
-                "minecraft:iron_boots": { "skill": "Defense", "level": 25 },
-                
-                "minecraft:diamond_helmet": { "skill": "Defense", "level": 45 },
-                "minecraft:diamond_chestplate": { "skill": "Defense", "level": 45 },
-                "minecraft:diamond_leggings": { "skill": "Defense", "level": 45 },
-                "minecraft:diamond_boots": { "skill": "Defense", "level": 45 },
-                
-                "minecraft:netherite_helmet": { "skill": "Defense", "level": 65 },
-                "minecraft:netherite_chestplate": { "skill": "Defense", "level": 65 },
-                "minecraft:netherite_leggings": { "skill": "Defense", "level": 65 },
-                "minecraft:netherite_boots": { "skill": "Defense", "level": 65 }
+                  "minecraft:leather_helmet": { "skill": "DEFENSE", "level": 0 },
+                  "minecraft:leather_chestplate": { "skill": "DEFENSE", "level": 0 },
+                  "minecraft:leather_leggings": { "skill": "DEFENSE", "level": 0 },
+                  "minecraft:leather_boots": { "skill": "DEFENSE", "level": 0 },
+
+                  "minecraft:golden_helmet": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:golden_chestplate": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:golden_leggings": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:golden_boots": { "skill": "DEFENSE", "level": 15 },
+
+                  "minecraft:chainmail_helmet": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:chainmail_chestplate": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:chainmail_leggings": { "skill": "DEFENSE", "level": 15 },
+                  "minecraft:chainmail_boots": { "skill": "DEFENSE", "level": 15 },
+
+                  "minecraft:turtle_helmet": { "skill": "DEFENSE", "level": 35 },
+
+                  "minecraft:iron_helmet": { "skill": "DEFENSE", "level": 35 },
+                  "minecraft:iron_chestplate": { "skill": "DEFENSE", "level": 35 },
+                  "minecraft:iron_leggings": { "skill": "DEFENSE", "level": 35 },
+                  "minecraft:iron_boots": { "skill": "DEFENSE", "level": 35 },
+
+                  "minecraft:diamond_helmet": { "skill": "DEFENSE", "level": 60 },
+                  "minecraft:diamond_chestplate": { "skill": "DEFENSE", "level": 60 },
+                  "minecraft:diamond_leggings": { "skill": "DEFENSE", "level": 60 },
+                  "minecraft:diamond_boots": { "skill": "DEFENSE", "level": 60 },
+
+                  "minecraft:netherite_helmet": { "skill": "DEFENSE", "level": 75 },
+                  "minecraft:netherite_chestplate": { "skill": "DEFENSE", "level": 75 },
+                  "minecraft:netherite_leggings": { "skill": "DEFENSE", "level": 75 },
+                  "minecraft:netherite_boots": { "skill": "DEFENSE", "level": 75 },
+
+                  "minecraft:elytra": { "skill": "MAGIC", "level": 65 }
                 }
                 """;
     }
@@ -167,61 +154,70 @@ public class RequirementLoader {
     private static String getDefaultWeaponRequirements() {
         return """
                 {
-                "minecraft:wooden_axe": { "skill": "Slaying", "level": 0 },
-                "minecraft:stone_axe": { "skill": "Slaying", "level": 10 },
-                "minecraft:golden_axe": { "skill": "Slaying", "level": 12 },
-                "minecraft:iron_axe": { "skill": "Slaying", "level": 20 },
-                "minecraft:diamond_axe": { "skill": "Slaying", "level": 45 },
-                "minecraft:netherite_axe": { "skill": "Slaying", "level": 65 },
-                
+                  "minecraft:wooden_sword": { "skill": "SLAYING", "level": 0 },
+                  "minecraft:stone_sword": { "skill": "SLAYING", "level": 10 },
+                  "minecraft:golden_sword": { "skill": "SLAYING", "level": 15 },
+                  "minecraft:iron_sword": { "skill": "SLAYING", "level": 30 },
+                  "minecraft:diamond_sword": { "skill": "SLAYING", "level": 60 },
+                  "minecraft:netherite_sword": { "skill": "SLAYING", "level": 75 },
 
-                "minecraft:bow": { "skill": "Slaying", "level": 12 },
-                "minecraft:mace": { "skill": "Slaying", "level": 35 },
-                
-                "minecraft:wooden_sword": { "skill": "Slaying", "level": 0 },
-                "minecraft:stone_sword": { "skill": "Slaying", "level": 10 },
-                "minecraft:golden_sword": { "skill": "Slaying", "level": 12 },
-                "minecraft:iron_sword": { "skill": "Slaying", "level": 20 },
-                "minecraft:diamond_sword": { "skill": "Slaying", "level": 45 },
-                "minecraft:netherite_sword": { "skill": "Slaying", "level": 65 }
+                  "minecraft:crossbow": { "skill": "SLAYING", "level": 5 },
+                  "minecraft:bow": { "skill": "SLAYING", "level": 20 },
+                  "minecraft:mace": { "skill": "SLAYING", "level": 35 },
+
+                  "minecraft:wooden_axe": {"skill": "SLAYING", "level": 0},
+                  "minecraft:stone_axe": {"skill": "SLAYING", "level": 10},
+                  "minecraft:golden_axe": {"skill": "SLAYING", "level": 15},
+                  "minecraft:iron_axe": {"skill": "SLAYING", "level": 30},
+                  "minecraft:diamond_axe": {"skill": "SLAYING", "level": 60},
+                  "minecraft:netherite_axe": {"skill": "SLAYING", "level": 75}
                 }
                 """;
     }
 
     // Provide default JSON content for magic
-    private static String getDefaultMagicRequirements() {
+    private static String getDefaultMAGICRequirements() {
         return """
                 {
                   "minecraft:fortune": {
-                    "skill": "Magic",
-                    "level": 25
+                    "skill": "MAGIC",
+                    "level": 35,
+                    "enchantmentLevel": 3
                   },
+
                   "minecraft:protection": {
-                    "skill": "Magic",
-                    "level": 35
+                    "skill": "MAGIC",
+                    "level": 50,
+                    "enchantmentLevel": 4
                   },
+
                   "minecraft:efficiency": {
-                    "skill": "Magic",
-                    "level": 45
+                    "skill": "MAGIC",
+                    "level": 55,
+                    "enchantmentLevel": 5
                   },
+
                   "minecraft:mending": {
-                    "skill": "Magic",
-                    "level": 55
+                    "skill": "MAGIC",
+                    "level": 60,
+                    "enchantmentLevel": 1
                   },
+
                   "block.minecraft.enchanting_table": {
-                    "skill": "Magic",
+                    "skill": "MAGIC",
                     "level": 20
                   },
+
                   "block.minecraft.anvil": {
-                    "skill": "Magic",
+                    "skill": "MAGIC",
                     "level": 10
                   },
                   "block.minecraft.chipped_anvil": {
-                    "skill": "Magic",
+                    "skill": "MAGIC",
                     "level": 10
                   },
                   "block.minecraft.damaged_anvil": {
-                    "skill": "Magic",
+                    "skill": "MAGIC",
                     "level": 10
                   }
                 }
@@ -241,7 +237,7 @@ public class RequirementLoader {
         return weaponRequirements.get(id);
     }
 
-    public static SkillRequirement getMagicRequirement(String id) {
+    public static SkillRequirement getMAGICRequirement(String id) {
         return magicRequirements.get(id);
     }
 }

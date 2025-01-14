@@ -1,34 +1,43 @@
 {
   "minecraft:fortune": {
-    "skill": "Magic",
-    "level": 25
+    "skill": "MAGIC",
+    "level": 35,
+    "enchantmentLevel": 3
   },
+
   "minecraft:protection": {
-    "skill": "Magic",
-    "level": 35
+    "skill": "MAGIC",
+    "level": 50,
+    "enchantmentLevel": 4
   },
+
   "minecraft:efficiency": {
-    "skill": "Magic",
-    "level": 45
+    "skill": "MAGIC",
+    "level": 55,
+    "enchantmentLevel": 5
   },
+
   "minecraft:mending": {
-    "skill": "Magic",
-    "level": 55
+    "skill": "MAGIC",
+    "level": 60,
+    "enchantmentLevel": 1
   },
+
   "block.minecraft.enchanting_table": {
-    "skill": "Magic",
+    "skill": "MAGIC",
     "level": 20
   },
+
   "block.minecraft.anvil": {
-    "skill": "Magic",
+    "skill": "MAGIC",
     "level": 10
   },
   "block.minecraft.chipped_anvil": {
-    "skill": "Magic",
+    "skill": "MAGIC",
     "level": 10
   },
   "block.minecraft.damaged_anvil": {
-    "skill": "Magic",
+    "skill": "MAGIC",
     "level": 10
   }
 }

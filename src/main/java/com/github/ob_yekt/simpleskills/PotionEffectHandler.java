@@ -49,12 +49,12 @@ public class PotionEffectHandler {
     }
 
     private static void grantMagicXP(ServerPlayerEntity player) {
-        XPManager.addXpWithNotification(player, Skills.MAGIC, (ConfigLoader.getBaseXp(Skills.MAGIC))*20);
+        XPManager.addXPWithNotification(player, Skills.MAGIC, (ConfigLoader.getBaseXP(Skills.MAGIC)));
     }
 
     private static void extendPotionEffect(ServerPlayerEntity player, StatusEffectInstance newEffect) {
         int magicLevel = XPManager.getSkillLevel(player.getUuidAsString(), Skills.MAGIC);
-        int maxDuration = calculateMaxPotionDuration(magicLevel);
+        int maxDuration = calculateMaXPotionDuration(magicLevel);
 
         StatusEffectInstance existingEffect = player.getStatusEffect(newEffect.getEffectType());
 
@@ -77,8 +77,8 @@ public class PotionEffectHandler {
         ));
     }
 
-    private static int calculateMaxPotionDuration(int magicLevel) {
-        int capInTicks = Math.min(magicLevel * 60 * 20, MAX_POTION_CAP);
-        return Math.max(capInTicks, 1 * 60 * 20); // Minimum cap of 1 minute
+    private static int calculateMaXPotionDuration(int magicLevel) {
+        int capInTicks = Math.min(magicLevel * 60 * 20, MAX_POTION_CAP); // Maximum cap
+        return Math.max(capInTicks, 60 * 20); // Minimum cap of 1 minute (60 seconds * 20 ticks)
     }
 }

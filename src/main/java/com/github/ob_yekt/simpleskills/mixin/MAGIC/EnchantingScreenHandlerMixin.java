@@ -3,10 +3,11 @@ package com.github.ob_yekt.simpleskills.mixin.MAGIC;
 import com.github.ob_yekt.simpleskills.Skills;
 import com.github.ob_yekt.simpleskills.XPManager;
 import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.screen.EnchantmentScreenHandler;
-import net.minecraft.enchantment.Enchantment;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +19,7 @@ public class EnchantingScreenHandlerMixin {
     @Inject(method = "onButtonClick", at = @At("HEAD"))
     private void onButtonClick(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> cir) {
         if (player instanceof ServerPlayerEntity) {
-            EnchantmentScreenHandler handler = (EnchantmentScreenHandler)(Object)this;
+            EnchantmentScreenHandler handler = (EnchantmentScreenHandler) (Object) this;
             grantEnchantingXP((ServerPlayerEntity) player, handler, id);
         }
     }
@@ -29,8 +30,8 @@ public class EnchantingScreenHandlerMixin {
         int level = handler.enchantmentPower[buttonId];
         if (level > 0) {
             // Grant XP based on the enchantment level
-            int xp = (ConfigLoader.getBaseXp(Skills.MAGIC)) * 10 * level;
-            XPManager.addXpWithNotification(player, Skills.MAGIC, xp);
+            int XP = (ConfigLoader.getBaseXP(Skills.MAGIC)) * level; // Level = level requirement of enchant (max level table enchant = 30)
+            XPManager.addXPWithNotification(player, Skills.MAGIC, XP);
         }
     }
 }
