@@ -192,9 +192,9 @@ Reset your Class to Peasant by right clicking a Cauldron with a Feather. This wi
 To make early-game more tolerable with enchantments locked behind Magic levels, Potions play a larger role.
 
 Clerics may now offer: 
-* 1x Blaze Powder for 3x Emeralds
-* 1x Nether Wart for 6x Emeralds
-* 1x Dragon Breath for 8x Emeralds
+* 1x Blaze Powder for 3x Emeralds at level 3
+* 1x Nether Wart for 6x Emeralds at level 4
+* 1x Dragon Breath for 8x Emeralds at level 5
 
 ### You can disable adjusted Cleric trades in config.json !
 
