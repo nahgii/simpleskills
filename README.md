@@ -142,45 +142,50 @@ Each skill offers unique passive bonuses at higher levels:
 
 ## Classes and Perks
 `CLASSES AND PERKS CAN BE DISABLED IN THE CONFIG.JSON ! (Enabled by default)`
+
+Reset your Class to Peasant by right clicking a Cauldron with a Feather. This will reset your primary skill.
+
 ### Peasant (None)
 - Default class
-### Knight (Defense)
+### Knight (Defense): Right click a Smithing Table with an empty Book.
 - **Hamstring**: Apply Slowness for 4 seconds with melee hits.
 - **Heavy Bolts**: +45% crossbow damage.
 - **Patronage**: Better deals with villagers.
 - **Rigid Arsenal**: Cannot use tridents or bows.
 
-### Rogue (Slaying)
+### Rogue (Slaying): Right click a Grindstone with an empty Book.
 - **Stealth**: Invisibility and faster sneaking speed.
 - **Poison Strike**: Apply Wither II for 4 seconds while invisible.
 - **Flash Powder**: Breaks all aggro of mobs within the radius. 12sec cooldown, 10 block radius, 1 Glowstone Dust per use.
 - **Slim Physique**: Max health reduced by 40%.
 
-### Farmhand (Farming)
+### Farmhand (Farming): Right click a Composter with an empty Book.
 - **Fortitude**: Minimum hunger of 7.
 - **Rustic Temperament**: -30% Magic XP gain.
 
-### Lumberjack (Woodcutting)
+### Lumberjack (Woodcutting): Right click a Fletching Table with an empty Book.
 - **Strong Arms:** Attack speed is increased to 5 (base = 4). (e.g., iron axe: 0.9 base -> 1.35 with perk).
 - **Salvaged Bark:** Gain 2 planks when you strip a log.
 - **Brute:** Swords deal 75% less damage, but Axes can be used for Slaying based on Woodcutting skill.
 
-### Miner (Mining)
+### Miner (Mining): Right click a Blast Furnace with an empty Book.
 - **Safety Lamp:** night vision when a torch/lantern is equipped in the off-hand.
 - **Blasting Expert:** 20% less damage from explosions (stacks with Blast Protection IV).
 - **Vertigo:** 20% more fall damage.
 
-### Wizard (Magic)
-* **Incantation:** cast spells based on your equipped wand:
-* 1. Stick: grants regeneration to targeted player or self. (20sec cooldown)
-* 2. Blaze Rod: casts a fireball that deals damage to entities, but not blocks. (25sec cooldown)
-* 3. Breeze Rod: toggles levitation, allowing you to move in the air horizontally, but not vertically. (2sec cooldown)
-* **Frail Body:** -10% XP gain to all skills except Magic.
-* **I Put on My Robe and Wizard Hat:** can only wear Leather Armor, Elytra, and Turtle Shell.
 
-### Farmhand (Farming)
-- **Fortitude**: Minimum hunger of 7.
-- **Rustic Temperament**: -30% Magic XP gain.
+### Nomad (Excavation): Right click a Loom with an empty Book.
+- **Scavenger**: Food saturation decays 25% slower, and you are immune to hunger effects.
+- **Bottomless Bundle**: Right-click with a Bundle to access your Ender Chest inventory.
+- **Outsider**: Villages view Nomads with suspicion, refusing to trade.
+
+### Wizard (Magic): Right click a Bookshelf with an empty Book.
+- **Incantation:** cast spells based on your equipped wand:
+- 1. Stick: grants regeneration to targeted player or self. (20sec cooldown)
+- 2. Blaze Rod: casts a fireball that deals damage to entities, but not blocks. (25sec cooldown)
+- 3. Breeze Rod: toggles levitation, allowing you to move in the air horizontally, but not vertically. (2sec cooldown)
+- **Frail Body:** -10% XP gain to all skills except Magic.
+- **I Put on My Robe and Wizard Hat:** can only wear Leather Armor, Elytra, and Turtle Shell.
 
 ---
 ## Adjusted Cleric Trades
