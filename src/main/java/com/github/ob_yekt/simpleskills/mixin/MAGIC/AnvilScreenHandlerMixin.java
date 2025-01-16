@@ -2,7 +2,6 @@ package com.github.ob_yekt.simpleskills.mixin.MAGIC;
 
 import com.github.ob_yekt.simpleskills.Skills;
 import com.github.ob_yekt.simpleskills.XPManager;
-import com.github.ob_yekt.simpleskills.requirements.ConfigLoader;
 import com.github.ob_yekt.simpleskills.requirements.RequirementLoader;
 import com.github.ob_yekt.simpleskills.requirements.SkillRequirement;
 
