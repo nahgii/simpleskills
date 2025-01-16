@@ -106,7 +106,7 @@ public class Incantation {
         target.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, REGENERATION_DURATION * 20, REGENERATION_LEVEL, true, true, true));
 
         spawnRegenerationParticles(target);
-        target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0F, 1.4F);
+        target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0F, 1.4F);
         player.sendMessage(Text.literal("§6[simpleskills]§f You cast Regeneration on " + target.getName().getString() + "!"), true);
     }
 
