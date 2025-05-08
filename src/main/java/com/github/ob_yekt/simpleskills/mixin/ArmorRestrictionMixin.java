@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ArmorRestrictionMixin {
 
     @Inject(method = "equipStack", at = @At("HEAD"), cancellable = true)
-    private void restrictArmorEquip(EquipmentSlot slot, ItemStack stack, CallbackInfo ci) {
+    private void restrictArmorEquip(EquipmentSlot slot, ItemStack stack, boolean simulate, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
         if (!(self instanceof ServerPlayerEntity player)) return;
         if (!slot.isArmorSlot() || stack.isEmpty()) return;
